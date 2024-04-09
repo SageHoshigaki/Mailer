@@ -1,4 +1,3 @@
-import axios from "axios";
 import fs from "fs"; // Node.js filesystem module
 
 // Function to send LobMail with attachment from Google Cloud Storage
