@@ -13,17 +13,12 @@ const scraperGet = (req, res) => {
 };
 
 const scraperPost = async (req, res) => {
-  if (req.method !== "POST") {
-    res.setHeader("Allow", ["POST"]);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
-    return;
-  }
+  console.log(req.body);
 
-  const browser = await puppeteer.launch({ headless: true });
+  /* const browser = await puppeteer.launch({ headless: true });
   try {
     const page = await browser.newPage();
-    const url =
-      "https://link.pennequitygroup.com/documents/v1/25d92655-3f21-464e-a026-bd54234ab15d";
+    const url = "https://link.pennequitygroup.com/documents/v1/25d92655-3f21-464e-a026-bd54234ab15d";
 
     await page.goto(url);
 
@@ -34,7 +29,6 @@ const scraperPost = async (req, res) => {
     await downLoadBtn.click();
 
     // Handle the PDF download here...
-    // For demonstration, let's assume `pdfBuffer` is the PDF file content
     const pdfBuffer = await page.screenshot(); // Replace with actual PDF download logic
 
     // Upload the PDF to Google Cloud Storage
@@ -59,6 +53,7 @@ const scraperPost = async (req, res) => {
   } finally {
     await browser.close();
   }
+  */
 };
 
 export default async function handler(req, res) {
@@ -69,6 +64,6 @@ export default async function handler(req, res) {
       return scraperPost(req, res);
     default:
       res.setHeader("Allow", ["GET", "POST"]);
-      return res.status(405).end("Method ${req.method} Not Allowed");
+      return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
