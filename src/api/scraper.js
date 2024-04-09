@@ -11,7 +11,7 @@ const scraperGet = (req, res) => {
   console.log(req.body);
 };
 
-const scraperPost = (req, res) => {
+const scraperPost = async (req, res) => {
 
    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
