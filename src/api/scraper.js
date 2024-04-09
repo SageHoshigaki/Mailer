@@ -8,7 +8,7 @@ const storage = new Storage(); // Assumes you have set up authentication
 const bucketName = "gohighleveldc";
 
 const scraperGet = (req, res) => {
-  console.log(req.body);
+  console.log("Hello You hit the server route");
 };
 
 const scraperPost = async (req, res) => {
