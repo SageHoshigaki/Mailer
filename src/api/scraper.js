@@ -9,6 +9,7 @@ const bucketName = "gohighleveldc";
 
 const scraperGet = (req, res) => {
   console.log("Hello You hit the server route");
+  res.status(200).json({ message: "Hello You hit the server route" });
 };
 
 const scraperPost = async (req, res) => {
