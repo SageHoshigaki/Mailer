@@ -15,45 +15,21 @@ const scraperGet = (req, res) => {
 const scraperPost = async (req, res) => {
   console.log(req.body);
 
-  /* const browser = await puppeteer.launch({ headless: true });
   try {
-    const page = await browser.newPage();
-    const url = "https://link.pennequitygroup.com/documents/v1/25d92655-3f21-464e-a026-bd54234ab15d";
+    // Process your request here
+    // For now, we just log the body and return a success response
 
-    await page.goto(url);
-
-    // Interact with the page as necessary
-    const finishBtn = await page.waitForSelector("#success-scroll-btn");
-    await finishBtn.click();
-    const downLoadBtn = await page.waitForSelector(".n-button-down");
-    await downLoadBtn.click();
-
-    // Handle the PDF download here...
-    const pdfBuffer = await page.screenshot(); // Replace with actual PDF download logic
-
-    // Upload the PDF to Google Cloud Storage
-    const bucket = storage.bucket(bucketName);
-    const fileName = `pdfs/${Date.now()}.pdf`;
-    const file = bucket.file(fileName);
-    await file.save(pdfBuffer);
-
-    // Save the reference in CockroachDB
-    const savedData = await prisma.UserMailService.create({
-      data: {
-        from, // Ensure 'from' is defined somewhere in your code
-        to, // Ensure 'to' is defined somewhere in your code
-        pdfUrl: `https://storage.googleapis.com/${bucketName}/${fileName}`,
-      },
+    // Set a timeout for this function, adjust the time as needed
+    res.setTimeout(30000, () => {
+      console.error("Function timed out");
+      res.status(504).json({ success: false, error: "Function timed out" });
     });
 
-    res.status(200).json({ success: true, data: savedData });
+    res.status(200).json({ success: true, data: "Processed successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: error.message });
-  } finally {
-    await browser.close();
   }
-  */
 };
 
 export default async function handler(req, res) {
