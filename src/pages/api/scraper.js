@@ -34,27 +34,17 @@ const scraperPost = async (req, res) => {
   try {
     // Extract the customData from the request body
     const customData = req.body.customData;
+    console.log("Extracted customData:", customData);
 
-    // Validate the customData structure
     if (!customData) {
-      throw new Error("customData is missing or not in the expected format");
+      throw new Error("customData is missing from the request body");
     }
 
-    // Save the incoming data to the database
+    // For debugging, try saving a simplified object
     const savedData = await prisma.userMailService.create({
       data: {
-        document: customData.document,
-        To_DebtCollectorName: customData.To_DebtCollectorName,
-        To_DebtCollectorAddress: customData.To_DebtCollectorAddress,
-        To_DebtCollectorCity: customData.To_DebtCollectorCity,
-        To_DebtCollectorState: customData.To_DebtCollectorState,
-        To_DebtCollectorZipCode: customData.To_DebtCollectorZipCode,
-        From_ContactFullName: customData.From_ContactFullName,
-        From_ContactAddress: customData.From_ContactAddress,
-        From_ContactCity: customData.From_ContactCity,
-        From_ContactState: customData.From_ContactState,
-        From_ContactZipCode: customData.From_ContactZipCode,
-        // pdfLink will be set later, so it's not included here
+        document: customData.document, // Just try with one field initially
+        // Add other fields once the basic insertion is successful
       },
     });
 

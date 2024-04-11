@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -26,5 +20,5 @@ model UserMailService {
   From_ContactCity        String
   From_ContactState       String
   From_ContactZipCode     String
-  pdfLink                 String? // Optional field for storing the PDF URL later
+  pdfLink                 String?
 }
