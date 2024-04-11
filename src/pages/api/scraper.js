@@ -32,12 +32,28 @@ const scraperPost = async (req, res) => {
   console.log(req.body);
 
   try {
-    // Save the incoming data except the document URL to the database
-    const { document, ...rest } = req.body;
-    const savedData = await prisma.UserMailService.create({
+    const customData = req.body.customData;
+
+    // Validate that customData contains the expected properties
+    if (!customData || typeof customData !== "object") {
+      throw new Error("customData is missing or not in the expected format");
+    }
+
+    // Save the incoming data to the database
+    const savedData = await prisma.userMailService.create({
       data: {
-        ...rest,
-        document: document, // Assuming you want to save the URL in the database initially
+        document: customData.document,
+        To_DebtCollectorName: customData.To_DebtCollectorName,
+        To_DebtCollectorAddress: customData.To_DebtCollectorAddress,
+        To_DebtCollectorCity: customData.To_DebtCollectorCity,
+        To_DebtCollectorState: customData.To_DebtCollectorState,
+        To_DebtCollectorZipCode: customData.To_DebtCollectorZipCode,
+        From_ContactFullName: customData.From_ContactFullName,
+        From_ContactAddress: customData.From_ContactAddress,
+        From_ContactCity: customData.From_ContactCity,
+        From_ContactState: customData.From_ContactState,
+        From_ContactZipCode: customData.From_ContactZipCode,
+        // pdfLink is optional and can be added later if needed
       },
     });
 
