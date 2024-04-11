@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "cockroachdb"
+  provider = "postgresql" // Use "postgresql" for CockroachDB
   url      = env("DATABASE_CONNECTION")
 }
 
