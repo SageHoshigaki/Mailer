@@ -32,10 +32,11 @@ const scraperPost = async (req, res) => {
   console.log(req.body);
 
   try {
+    // Extract the customData from the request body
     const customData = req.body.customData;
 
-    // Validate that customData contains the expected properties
-    if (!customData || typeof customData !== "object") {
+    // Validate the customData structure
+    if (!customData) {
       throw new Error("customData is missing or not in the expected format");
     }
 
@@ -53,7 +54,7 @@ const scraperPost = async (req, res) => {
         From_ContactCity: customData.From_ContactCity,
         From_ContactState: customData.From_ContactState,
         From_ContactZipCode: customData.From_ContactZipCode,
-        // pdfLink is optional and can be added later if needed
+        // pdfLink will be set later, so it's not included here
       },
     });
 
