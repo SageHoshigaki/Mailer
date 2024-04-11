@@ -34,7 +34,7 @@ const scraperPost = async (req, res) => {
   try {
     // Save the incoming data except the document URL to the database
     const { document, ...rest } = req.body;
-    const savedData = await prisma.documentData.create({
+    const savedData = await prisma.UserMailService.create({
       data: {
         ...rest,
         document: document, // Assuming you want to save the URL in the database initially
