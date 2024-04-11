@@ -1,7 +1,7 @@
 // pages/api/download.js
 import puppeteer from "puppeteer";
 import { Storage } from "@google-cloud/storage";
-import { PrismaClient } from "@prisma/client";
+const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 const storage = new Storage(); // Assumes you have set up authentication
