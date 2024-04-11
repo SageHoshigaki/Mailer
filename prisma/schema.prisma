@@ -14,8 +14,17 @@ datasource db {
 }
 
 model UserMailService {
-  id            BigInt @id @unique @default(autoincrement())
-  to            String
-  from          String
-  CertifiedMail Int
+  id                      BigInt  @id @default(autoincrement())
+  document                String
+  To_DebtCollectorName    String
+  To_DebtCollectorAddress String
+  To_DebtCollectorCity    String
+  To_DebtCollectorState   String
+  To_DebtCollectorZipCode String
+  From_ContactFullName    String
+  From_ContactAddress     String
+  From_ContactCity        String
+  From_ContactState       String
+  From_ContactZipCode     String
+  pdfLink                 String? // Optional field for storing the PDF URL later
 }
