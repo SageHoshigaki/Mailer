@@ -1,6 +1,7 @@
 // pages/api/download.js
-const puppeteer = require("puppeteer");
+const fs = require("fs");
 const path = require("path");
+const puppeteer = require("puppeteer");
 import { Storage } from "@google-cloud/storage";
 const { PrismaClient } = require("@prisma/client");
 
@@ -9,43 +10,90 @@ const storage = new Storage(); // Assumes you have set up authentication
 const bucketName = "gohighleveldc";
 
 async function puppetArms(url) {
-  const downloadPath = path.resolve(__dirname, "downloads"); // Set download directory
+  let browser;
+  try {
+    const downloadPath = path.resolve(__dirname, "downloads");
 
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: [
-      `--no-sandbox`,
-      `--disable-setuid-sandbox`,
-      `--disable-dev-shm-usage`,
-      `--disable-accelerated-2d-canvas`,
-      `--disable-gpu`,
-    ],
+    browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-accelerated-2d-canvas",
+        "--disable-gpu",
+      ],
+    });
+    const page = await browser.newPage();
+
+    await page._client.send("Page.setDownloadBehavior", {
+      behavior: "allow",
+      downloadPath: downloadPath,
+    });
+
+    await page.goto(url, { waitUntil: "networkidle0" });
+    const finishBtn = await page.waitForSelector("#success-scroll-btn");
+    await finishBtn.click();
+    const downLoadbtn = await page.waitForSelector(".n-button-down");
+    await downLoadbtn.click();
+
+    // Wait for the download to start and finish; replace 'waitForDownload' with a function that checks for file presence
+    await waitForDownload(downloadPath);
+
+    // Find the downloaded file
+    const downloadedFile = fs
+      .readdirSync(downloadPath)
+      .find((file) => file.endsWith(".pdf")); // Adjust if necessary to match the file pattern
+    if (!downloadedFile) {
+      throw new Error("Download failed or file not found.");
+    }
+
+    const filePath = path.join(downloadPath, downloadedFile);
+    console.log("Downloaded file path:", filePath);
+
+    return filePath;
+  } catch (error) {
+    console.error("Error in puppetArms function:", error);
+    throw error; // Rethrow error for handling in the calling function
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
+  }
+}
+
+async function waitForDownload(downloadPath, timeout = 300000) {
+  // Default timeout is 5 minutes
+  let elapsed = 0; // Time elapsed since the start of the download
+  const interval = 1000; // Check every 1 second
+
+  return new Promise((resolve, reject) => {
+    // This interval will repeatedly check if the file exists
+    const intervalId = setInterval(() => {
+      // List all files in the download directory
+      const files = fs.readdirSync(downloadPath);
+
+      // Check if there is a file with the .pdf extension
+      const downloadedFile = files.find((file) => file.endsWith(".pdf"));
+
+      if (downloadedFile) {
+        clearInterval(intervalId); // Stop polling
+        resolve(path.join(downloadPath, downloadedFile)); // Resolve with the file path
+      } else if (elapsed > timeout) {
+        clearInterval(intervalId); // Stop polling
+        reject(
+          new Error("Download did not complete within the expected time.")
+        );
+      }
+
+      elapsed += interval;
+    }, interval);
+
+    // Additionally, we listen for the process to exit and clear the interval to avoid a Node.js exit error.
+    process.on("exit", () => {
+      clearInterval(intervalId);
+    });
   });
-  const page = await browser.newPage();
-
-  await page._client.send("Page.setDownloadBehavior", {
-    behavior: "allow",
-    downloadPath: downloadPath,
-  });
-
-  await page.goto(url);
-  const finishBtn = await page.waitForSelector("#success-scroll-btn");
-  await finishBtn.click();
-
-  const downLoadbtn = await page.waitForSelector(".n-button-down");
-  await downLoadbtn.click();
-
-  // Wait for the download to finish
-  await page.waitForTimeout(300000); // Adjust timeout as necessary
-
-  await browser.close();
-
-  // Construct the full path to the downloaded file
-  const filePath = path.join(downloadPath, "yourDownloadedFile.pdf"); // Adjust file name as necessary
-
-  console.log(filePath);
-
-  return filePath;
 }
 
 async function uploadToGoogleCloud(filePath) {
@@ -98,6 +146,15 @@ const scraperPost = async (req, res) => {
 
     console.log("Data saved:", savedData);
     res.status(200).json({ success: true, data: "Processed successfully" });
+
+    setImmediate(async () => {
+      try {
+        await puppetArms();
+      } catch (error) {
+        console.error("Error running additional function:", error);
+        // Handle error - perhaps retry the task, log the error, etc.
+      }
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: error.message });
