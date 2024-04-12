@@ -58,6 +58,8 @@ const scraperPost = async (req, res) => {
       From_ContactZipCode: receivedData.From_ContactZipCode,
     };
 
+    console.log(customData);
+
     // Save the customData to the database
     const savedData = await prisma.userMailService.create({
       data: customData,
