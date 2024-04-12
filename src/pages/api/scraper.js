@@ -32,37 +32,21 @@ const scraperPost = async (req, res) => {
   console.log(req.body);
 
   try {
-    // Extract the data directly, assuming it's in the format you showed initially
-    const receivedData = req.body;
+    // Extract MailData from the request body
+    const { MailData } = req.body;
 
-    // Validate the receivedData structure
-    if (!receivedData || typeof receivedData !== "object") {
+    if (!MailData) {
       return res.status(400).json({
         success: false,
-        error: "Received data is missing or not in the expected format",
+        error: "MailData is missing from the request body",
       });
     }
 
-    // Construct the customData object in the required format
-    const customData = {
-      document: receivedData.document,
-      To_DebtCollectorName: receivedData.To_DebtCollectorName,
-      To_DebtCollectorAddress: receivedData.To_DebtCollectorAddress,
-      To_DebtCollectorCity: receivedData.To_DebtCollectorCity,
-      To_DebtCollectorState: receivedData.To_DebtCollectorState,
-      To_DebtCollectorZipCode: receivedData.To_DebtCollectorZipCode,
-      From_ContactFullName: receivedData.From_ContactFullName,
-      From_ContactAddress: receivedData.From_ContactAddress,
-      From_ContactCity: receivedData.From_ContactCity,
-      From_ContactState: receivedData.From_ContactState,
-      From_ContactZipCode: receivedData.From_ContactZipCode,
-    };
-
-    console.log(customData);
-
-    // Save the customData to the database
+    // Use the MailData object in the create method
     const savedData = await prisma.userMailService.create({
-      data: customData,
+      data: {
+        ...MailData,
+      },
     });
 
     // Set a timeout for this function, adjust the time as needed
