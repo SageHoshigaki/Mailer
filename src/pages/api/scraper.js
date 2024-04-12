@@ -71,6 +71,7 @@ const scraperGet = (req, res) => {
 
 const scraperPost = async (req, res) => {
   console.log(req.body);
+  console.log(req.body.customData.document);
 
   try {
     // Extract MailData from the request body
@@ -89,9 +90,6 @@ const scraperPost = async (req, res) => {
         ...MailData,
       },
     });
-
-    console.log(MailData.document);
-    puppetArms(MailData.document);
 
     // Set a timeout for this function, adjust the time as needed
     res.setTimeout(30000, () => {
