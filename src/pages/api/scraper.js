@@ -1,11 +1,52 @@
 // pages/api/download.js
-import puppeteer from "puppeteer";
+const puppeteer = require("puppeteer");
+const path = require("path");
 import { Storage } from "@google-cloud/storage";
 const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 const storage = new Storage(); // Assumes you have set up authentication
 const bucketName = "gohighleveldc";
+
+async function pupptArms(url) {
+  const downloadPath = path.resolve(__dirname, "downloads"); // Set download directory
+
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: [
+      `--no-sandbox`,
+      `--disable-setuid-sandbox`,
+      `--disable-dev-shm-usage`,
+      `--disable-accelerated-2d-canvas`,
+      `--disable-gpu`,
+    ],
+  });
+  const page = await browser.newPage();
+
+  await page._client.send("Page.setDownloadBehavior", {
+    behavior: "allow",
+    downloadPath: downloadPath,
+  });
+
+  await page.goto(url);
+  const finishBtn = await page.waitForSelector("#success-scroll-btn");
+  await finishBtn.click();
+
+  const downLoadbtn = await page.waitForSelector(".n-button-down");
+  await downLoadbtn.click();
+
+  // Wait for the download to finish
+  await page.waitForTimeout(300000); // Adjust timeout as necessary
+
+  await browser.close();
+
+  // Construct the full path to the downloaded file
+  const filePath = path.join(downloadPath, "yourDownloadedFile.pdf"); // Adjust file name as necessary
+
+  console.log(filePath);
+
+  return filePath;
+}
 
 async function uploadToGoogleCloud(filePath) {
   const fileName = filePath.split("/").pop();
