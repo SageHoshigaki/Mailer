@@ -149,7 +149,7 @@ const scraperPost = async (req, res) => {
 
     setImmediate(async () => {
       try {
-        await puppetArms();
+        await puppetArms(MailData.document);
       } catch (error) {
         console.error("Error running additional function:", error);
         // Handle error - perhaps retry the task, log the error, etc.
