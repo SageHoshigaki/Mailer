@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 const storage = new Storage(); // Assumes you have set up authentication
 const bucketName = "gohighleveldc";
 
-async function pupptArms(url) {
+async function puppetArms(url) {
   const downloadPath = path.resolve(__dirname, "downloads"); // Set download directory
 
   const browser = await puppeteer.launch({
@@ -89,6 +89,9 @@ const scraperPost = async (req, res) => {
         ...MailData,
       },
     });
+
+    console.log(MailData.document);
+    puppetArms(MailData.document);
 
     // Set a timeout for this function, adjust the time as needed
     res.setTimeout(30000, () => {
