@@ -32,20 +32,36 @@ const scraperPost = async (req, res) => {
   console.log(req.body);
 
   try {
-    // Extract the customData from the request body
-    const customData = req.body.customData;
-    console.log("Extracted customData:", customData);
+    // Directly access the nested data
+    const inputData = req.body.customData;
 
-    if (!customData) {
-      throw new Error("customData is missing from the request body");
+    // Validate the inputData structure
+    if (!inputData || typeof inputData !== "object") {
+      return res.status(400).json({
+        success: false,
+        error: "Input data is missing or not in the expected format",
+      });
     }
 
-    // For debugging, try saving a simplified object
+    // Format the data to match the Prisma model
+    const formattedData = {
+      document: inputData.document,
+      To_DebtCollectorName: inputData.To_DebtCollectorName,
+      To_DebtCollectorAddress: inputData.To_DebtCollectorAddress,
+      To_DebtCollectorCity: inputData.To_DebtCollectorCity,
+      To_DebtCollectorState: inputData.To_DebtCollectorState,
+      To_DebtCollectorZipCode: inputData.To_DebtCollectorZipCode,
+      From_ContactFullName: inputData.From_ContactFullName,
+      From_ContactAddress: inputData.From_ContactAddress,
+      From_ContactCity: inputData.From_ContactCity,
+      From_ContactState: inputData.From_ContactState,
+      From_ContactZipCode: inputData.From_ContactZipCode,
+      // Assuming pdfLink will be set later
+    };
+
+    // Save the formatted data to the database
     const savedData = await prisma.userMailService.create({
-      data: {
-        document: customData.document, // Just try with one field initially
-        // Add other fields once the basic insertion is successful
-      },
+      data: formattedData,
     });
 
     // Set a timeout for this function, adjust the time as needed
