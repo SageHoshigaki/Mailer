@@ -71,7 +71,6 @@ const scraperGet = (req, res) => {
 
 const scraperPost = async (req, res) => {
   console.log(req.body);
-  console.log(req.body.customData.document);
 
   try {
     // Extract MailData from the request body
