@@ -1,6 +1,6 @@
-import { saveMailData } from "./saveMailData";
-import { handleError } from "./handleError";
-import { puppetQueue } from "../../lib/queue/puppetQueue";
+import { saveMailData } from "@utils/saveMailData";
+import { handleError } from "@utils/handleError";
+import { puppetQueue } from "@queue/puppetQueue";
 
 // GET handler remains unchanged
 const scraperGet = (req, res) => {

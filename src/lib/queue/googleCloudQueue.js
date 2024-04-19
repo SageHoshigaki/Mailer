@@ -1,5 +1,5 @@
 import Bull from "bull";
-import { redisClient } from "./redis";
+import { client } from "@utils/redis";
 
 const googleCloudQueue = new Bull("googleCloudQueue", {
   redis: redisClient,
