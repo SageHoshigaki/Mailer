@@ -5,7 +5,8 @@
       "@/*": ["./src/*"],
       "@utils/*":["src/utils/*"],
       "@lib/*":["src/lib/*"],
-      "@queue/*":["src/lib/queue/*"]
+      "@queue/*":["src/lib/queue/*"],
+      "@downloads/*":["src/lib/download/*"],
     }
   }
 }

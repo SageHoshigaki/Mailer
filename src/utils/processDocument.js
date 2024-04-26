@@ -1,4 +1,4 @@
-import { puppetArms } from "./puppetArms";
+import puppetArms from "@utils/puppetArms";
 
 // Gives Data Document For PuppetArms the Db Id And The Url To Download Document
 const processDocument = async (documentUrl, documentId) => {
@@ -7,8 +7,8 @@ const processDocument = async (documentUrl, documentId) => {
     await puppetArms(documentUrl, documentId);
   } catch (error) {
     console.error("Error running processDocument middleware:", error);
-    res.status(500).json({ success: false, error: error.message });
+    throw new Error(error.message);
   }
 };
 
-module.exports = processDocument;
+export default processDocument;

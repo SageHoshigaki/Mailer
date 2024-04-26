@@ -4,4 +4,4 @@ const handleError = async (err) => {
   res.status(500).json({ success: false, error: error.message });
 };
 
-module.exports = handleError;
+export default handleError;

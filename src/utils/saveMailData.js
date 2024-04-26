@@ -1,30 +1,26 @@
-import { prisma } from "./prisma";
+import prisma from "@utils/prisma";
 
 // Script To Process Incoming Users Save And Sanitize Data
-const saveMailData = async (req, res, next) => {
+const saveMailData = async (req) => {
   const { MailData } = req.body;
   if (!MailData) {
-    return res.status(400).json({
-      success: false,
-      error: "MailData is missing from the request body",
-    });
+    throw new Error("MailData is missing from the request body");
   }
 
   try {
     const savedData = await prisma.userMailService.create({
       data: { ...MailData },
     });
-    console.log("Data saved:", savedData);
 
-    res
-      .status(200)
-      .json({ success: true, message: "MailData saved successfully" });
     // Attach the saved data ID to the request object for the next middleware
-    return { document: savedData.document, id: savedData.id };
+    req.savedData = {
+      document: savedData.document,
+      id: savedData.id.toString(),
+    };
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, error: error.message });
+    console.error("Error saving mail data:", error);
+    throw new Error(error.message); // Now throws to be caught by the calling function
   }
 };
 
-module.exports = saveMailData;
+export default saveMailData;

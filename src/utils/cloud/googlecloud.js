@@ -1,6 +1,6 @@
 import { Storage } from "@google-cloud/storage";
 const storage = new Storage(); // Assumes you have set up authentication
-const bucketName = "gohighleveldc";
+const bucketName = "gohigh-level-mail";
 
 async function uploadToGoogleCloud(filePath) {
   const fileName = filePath.split("/").pop();
@@ -10,3 +10,5 @@ async function uploadToGoogleCloud(filePath) {
 
   return `https://storage.googleapis.com/${bucketName}/${fileName}`;
 }
+
+module.exports = uploadToGoogleCloud;

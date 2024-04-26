@@ -1,43 +1,52 @@
-import fs from "fs"; // Node.js filesystem module
+import axios from "axios";
+import dotenv from "dotenv";
+import { getDocumentFromDb } from "@utils/db/findDoc";
 
-// Function to send LobMail with attachment from Google Cloud Storage
-export async function sendLobMail(apiKey, toAddress, fromAddress, pdfPath) {
+dotenv.config();
+
+async function sendLobMail(documentId) {
   try {
-    // Download PDF file from Google Cloud Storage
-    const pdfData = await axios.get(pdfPath, { responseType: "arraybuffer" });
-    fs.writeFileSync("temp.pdf", pdfData.data); // Write PDF to local file
+    const document = await getDocumentFromDb(documentId); // Correctly call the imported function
 
-    // Lob API endpoint for creating a letter
-    const endpoint = "https://api.lob.com/v1/letters";
+    const formData = new URLSearchParams({
+      "to[name]": document.To_DebtCollectorName.trim(),
+      "to[address_line1]": document.To_DebtCollectorAddress.trim(),
+      "to[address_city]": document.To_DebtCollectorCity.trim(),
+      "to[address_state]": document.To_DebtCollectorState.trim(),
+      "to[address_zip]": document.To_DebtCollectorZipCode.trim(),
+      "from[name]": document.From_ContactFullName.trim(),
+      "from[address_line1]": document.From_ContactAddress.trim(),
+      "from[address_city]": document.From_ContactCity.trim(),
+      "from[address_state]": document.From_ContactState.trim(),
+      "from[address_zip]": document.From_ContactZipCode.trim(),
+      color: "true",
+      file: document.pdfLink, // Ensure the PDF link is correct
+    });
 
-    // Lob API request payload
-    const payload = {
-      to: toAddress,
-      from: fromAddress,
-      color: true, // Color printing
-      certified: true, // Certified mail option
-      file: fs.createReadStream("temp.pdf"), // Attach the PDF file
-    };
+    const response = await axios.post(
+      "https://api.lob.com/v1/letters",
+      formData,
+      {
+        headers: {
+          Authorization: `Basic ${Buffer.from(
+            process.env.LOB_KEY + ":"
+          ).toString("base64")}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
 
-    // Lob API request headers
-    const headers = {
-      Authorization: `Basic ${Buffer.from(apiKey + ":").toString("base64")}`,
-      "Content-Type": "multipart/form-data", // Set content type for file upload
-    };
-
-    // Send request to Lob API
-    const response = await axios.post(endpoint, payload, { headers });
-
-    // Handle response from Lob API
     if (response.status === 200) {
       console.log("Letter sent successfully.");
-      return true; // Return true if successful
+      return true;
     } else {
       console.error("Error sending letter:", response.data);
-      return false; // Return false if unsuccessful
+      return false;
     }
   } catch (error) {
     console.error("Error sending letter:", error.message);
-    return false; // Return false if error occurs
+    return false;
   }
 }
+
+export default sendLobMail;
