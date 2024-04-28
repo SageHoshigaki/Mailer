@@ -12,7 +12,7 @@ function Landing() {
           <span aria-hidden="true">Penn Mail</span>
         </p>
       </div>
-      <div> <h4>Penn Mail is an innovative application designed to automate and simplify the process of sending physical mail.  <br></br>This application caters to both businesses and individuals, providing a streamlined way to manage and execute mailing tasks with ease.</h4></div>
+      <div> <h4>Penn Mail is an innovative application designed to automate and simplify the process of sending physical mail.This application caters to both businesses and individuals, providing a streamlined way to manage and execute mailing tasks with ease.</h4></div>
     </div>
     
     
