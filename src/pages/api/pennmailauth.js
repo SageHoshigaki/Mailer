@@ -1,61 +1,74 @@
-import dotenv from "dotenv";
 import axios from "axios";
-import { URLSearchParams } from "url";
+import dotenv from "dotenv";
 
+// Load environment variables from .env file
 dotenv.config();
 
+// Helper function to exchange the authorization code for an access token
+async function exchangeAuthCodeForToken(code) {
+  const params = new URLSearchParams({
+    client_id: process.env.GOCLIENT_ID,
+    client_secret: process.env.GOCLIENT_SECRET,
+    grant_type: "authorization_code",
+    code: code,
+    redirect_uri: process.env.REDIRECT_URI,
+  });
+
+  try {
+    const response = await axios.post(
+      "https://services.leadconnectorhq.com/oauth/token",
+      params.toString(),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    return response.data; // This contains the access token and refresh token
+  } catch (error) {
+    console.error(
+      "Error exchanging authorization code for token:",
+      error.response.data
+    );
+    throw error;
+  }
+}
+
+// Helper function to construct the Authorization Page URL
+function constructAuthorizationPageUrl() {
+  const queryParams = new URLSearchParams({
+    response_type: "code",
+    client_id: process.env.GOCLIENT_ID,
+    redirect_uri: process.env.REDIRECT_URI,
+    scope: process.env.SCOPE,
+  });
+
+  return `https://marketplace.leadconnectorhq.com/oauth/chooselocation?${queryParams}`;
+}
+
+// Next.js API route to handle the OAuth 2.0 flow
 export default async function handler(req, res) {
   if (req.method === "GET") {
-    const { code } = req.query;
-
-    // Check if code is present
-    if (code) {
-      // Parameters needed for token exchange
-      const params = new URLSearchParams();
-      params.append("client_id", process.env.GOCLIENT_ID);
-      params.append("client_secret", process.env.GOCLIENT_SECRET);
-      params.append("grant_type", "authorization_code");
-      params.append("code", code);
-      params.append("redirect_uri", process.env.REDIRECT_URI); // Make sure this matches the redirect URI registered with the OAuth provider
-
-      try {
-        // Exchange code for an access token
-        const tokenResponse = await axios.post(
-          "https://services.leadconnectorhq.com/oauth/token",
-          params,
-          {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-          }
-        );
-
-        // Here you might want to save the token or do something with it
-        console.log(tokenResponse.data);
-
-        // Redirect user after successful token exchange or handle token
-        res.status(200).json({
-          success: true,
-          message: "OAuth token retrieved successfully.",
-          data: tokenResponse.data,
-        });
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({
-          success: false,
-          message: "Error exchanging OAuth token.",
-          error: error.response.data,
-        });
-      }
+    if (!req.query.code) {
+      // If no code is present, redirect to the OAuth provider's authorization page immediately
+      const authUrl = constructAuthorizationPageUrl();
+      res.redirect(authUrl);
     } else {
-      // No code in the query string
-      res.status(400).json({
-        success: false,
-        message: "No authorization code found in the request",
-      });
+      try {
+        // Exchange the authorization code for an access token
+        const tokenData = await exchangeAuthCodeForToken(req.query.code);
+        // You might want to store the tokens securely
+
+        // Redirect to a success page or handle the token data as needed
+        res.redirect("/success-page");
+      } catch (error) {
+        // Handle errors, such as displaying an error message or redirecting to an error page
+        res.status(500).json({ error: "Error in token exchange." });
+      }
     }
   } else {
-    res.setHeader("Allow", ["GET"]);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    // If the request method is not GET, return a 405 Method Not Allowed error
+    res.status(405).end("Method Not Allowed");
   }
 }
