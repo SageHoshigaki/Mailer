@@ -17,7 +17,7 @@ const saveMailData = async (req) => {
     // Optionally, attach the saved data ID to the request object for further processing
     req.savedData = {
       id: savedData.id.toString(),
-      document: savedData.document,
+      document: savedData.document_url,
     };
   } catch (error) {
     console.error("Error saving mail data:", error);
