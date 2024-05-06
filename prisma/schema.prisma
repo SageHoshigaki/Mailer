@@ -7,18 +7,35 @@ datasource db {
   url      = env("DATABASE_CONNECTION")
 }
 
+//model UserMailService {
+// id                      BigInt  @id @default(autoincrement())
+//  document                String
+//  To_DebtCollectorName    String
+//  To_DebtCollectorAddress String
+//  To_DebtCollectorCity    String
+//  To_DebtCollectorState   String
+//  To_DebtCollectorZipCode String
+// From_ContactFullName    String
+// From_ContactAddress     String
+// From_ContactCity        String
+// From_ContactState       String
+// From_ContactZipCode     String
+// pdfLink                 String?
+//}
 model UserMailService {
-  id                      BigInt  @id @default(autoincrement())
-  document                String
-  To_DebtCollectorName    String
-  To_DebtCollectorAddress String
-  To_DebtCollectorCity    String
-  To_DebtCollectorState   String
-  To_DebtCollectorZipCode String
-  From_ContactFullName    String
-  From_ContactAddress     String
-  From_ContactCity        String
-  From_ContactState       String
-  From_ContactZipCode     String
-  pdfLink                 String?
+  id                        BigInt   @id @default(autoincrement())
+  document                  String // Placeholder for actual document content   // Optional URL to the document
+  Contact_ToReceiverName    String
+  Contact_ToReceiverAddress String
+  Contact_ToReceiverCity    String
+  Contact_ToReceiverState   String
+  Contact_ToReceiverZipCode String
+  Contact_FromSenderName    String
+  Contact_FromSenderAddress String
+  Contact_FromSenderCity    String
+  Contact_FromSenderState   String
+  Contact_FromSenderZipCode String
+  Contact_SendDate          DateTime
+  Contact_TypeofMail        String
+  Contact_PaperSize         String
 }
