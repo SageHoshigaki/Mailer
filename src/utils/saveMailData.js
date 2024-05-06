@@ -18,8 +18,8 @@ const saveMailData = async (req) => {
     From_ContactCity: data.Contact_FromSenderCity,
     From_ContactState: data.contact_FromSenderState,
     From_ContactZipCode: data.contact_FromSenderZipCode,
-    document: data.MailData,
-    pdfLink: data.document_url,
+    document: data.document_url, // Assuming there is a document content that needs to be saved which isn't provided in the structure.
+    pdfLink: null,
   };
 
   try {
