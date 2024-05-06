@@ -35,7 +35,7 @@ model UserMailService {
   Contact_FromSenderCity    String
   contact_FromSenderState   String
   contact_FromSenderZipCode String
-  contact_SendDate          DateTime
+  contact_sendDate          DateTime
   Contact_TypeofMail        String
-  contact_PaperSize         String
+  contact_paperSize         String
 }
