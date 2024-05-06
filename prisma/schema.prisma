@@ -24,18 +24,18 @@ datasource db {
 //}
 model UserMailService {
   id                        BigInt   @id @default(autoincrement())
-  document                  String // Placeholder for actual document content   // Optional URL to the document
-  Contact_toReceiverName    String
-  Contact_ToReceiverAddress String
-  Contact_ToReceiverCity    String
-  Contact_ToReceiverState   String
-  Contact_ToReceiverZipCode String
-  Contact_FromSenderName    String
-  Contact_FromSenderAddress String
+  document_url              String // Placeholder for actual document content   // Optional URL to the document
+  contact_toReceiverName    String
+  contact_ToReceiverAddress String
+  contact_ToReceiverCity    String
+  contact_ToReceiverState   String
+  contact_ToReceiverZipCode String
+  contact_FromSenderName    String
+  contact_FromSenderAddress String
   Contact_FromSenderCity    String
-  Contact_FromSenderState   String
-  Contact_FromSenderZipCode String
-  Contact_SendDate          DateTime
+  contact_FromSenderState   String
+  contact_FromSenderZipCode String
+  contact_SendDate          DateTime
   Contact_TypeofMail        String
-  Contact_PaperSize         String
+  contact_PaperSize         String
 }
