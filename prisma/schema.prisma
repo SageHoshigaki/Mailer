@@ -25,7 +25,7 @@ datasource db {
 model UserMailService {
   id                        BigInt   @id @default(autoincrement())
   document                  String // Placeholder for actual document content   // Optional URL to the document
-  Contact_ToReceiverName    String
+  Contact_toReceiverName    String
   Contact_ToReceiverAddress String
   Contact_ToReceiverCity    String
   Contact_ToReceiverState   String
