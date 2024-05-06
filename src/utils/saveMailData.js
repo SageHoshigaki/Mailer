@@ -11,7 +11,6 @@ const saveMailData = async (req) => {
     const savedData = await prisma.userMailService.create({
       data: {
         ...data, // directly spreading the data assuming all names match exactly
-        document: "", // Assuming you will replace this with actual content if necessary
       },
     });
 
