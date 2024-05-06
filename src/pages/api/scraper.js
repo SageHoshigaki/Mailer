@@ -14,6 +14,8 @@ export default async function handler(req, res) {
     await ensureRedisConnection();
     console.log("Redis connection established.");
 
+    console.log(req.body);
+
     // Process incoming mail data
     await saveMailData(req);
     console.log("Mail data saved.");
