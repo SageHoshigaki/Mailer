@@ -35,6 +35,10 @@ lobMailQueue.on("active", (job) => {
   console.log(`lobMailQueue Job ${job.id} is now active.`);
 });
 
+lobMailQueue.on("stalled", (job) => {
+  console.log(`lobMailQueue Job ${job.id} has stalled.`);
+});
+
 lobMailQueue.on("error", (error) => {
   console.error("Redis error in lobMailQueue:", error);
 });

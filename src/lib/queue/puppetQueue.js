@@ -47,6 +47,10 @@ puppetQueue.on("completed", async (job, result) => {
   }
 });
 
+puppetQueue.on("stalled", (job) => {
+  console.log(`Job ${job.id} has stalled.`);
+});
+
 puppetQueue.on("failed", (job, error) => {
   console.error(`Job ${job.id} failed with error:`, error);
 });
