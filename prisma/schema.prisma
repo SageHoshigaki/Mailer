@@ -23,19 +23,19 @@ datasource db {
 // pdfLink                 String?
 //}
 model UserMailService {
-  id                        BigInt   @id @default(autoincrement())
-  document_url              String // Placeholder for actual document content   // Optional URL to the document
-  contact_toReceiverName    String
-  contact_ToReceiverAddress String
-  contact_ToReceiverCity    String
-  contact_ToReceiverState   String
-  contact_ToReceiverZipCode String
-  contact_FromSenderName    String
-  contact_FromSenderAddress String
-  Contact_FromSenderCity    String
-  contact_FromSenderState   String
-  contact_FromSenderZipCode String
-  contact_sendDate          DateTime
-  Contact_TypeofMail        String
-  contact_paperSize         String
+  id                        BigInt    @id @default(autoincrement())
+  document_url              String? // Optional: Now nullable
+  contact_toReceiverName    String?
+  contact_ToReceiverAddress String?
+  contact_ToReceiverCity    String?
+  contact_ToReceiverState   String?
+  contact_ToReceiverZipCode String?
+  contact_FromSenderName    String?
+  contact_FromSenderAddress String?
+  Contact_FromSenderCity    String?
+  contact_FromSenderState   String?
+  contact_FromSenderZipCode String?
+  contact_sendDate          DateTime?
+  Contact_TypeofMail        String?
+  contact_paperSize         String?
 }

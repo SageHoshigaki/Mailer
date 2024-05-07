@@ -1,9 +1,22 @@
+import Cors from "cors";
+import initMiddleware from "@utils/initMiddleware";
 import saveMailData from "@utils/saveMailData";
 import { puppetQueue } from "@queue/puppetQueue";
 import { ensureRedisConnection } from "@utils/redisManager";
 
-// Enhanced API route handler in Next.js
+// Initialize the CORS middleware
+const cors = initMiddleware(
+  Cors({
+    methods: ["POST"], // Only allow POST requests
+    origin: true, // Reflect the request origin or specify if needed
+    credentials: true,
+  })
+);
+
 export default async function handler(req, res) {
+  // Run CORS middleware first
+  await cors(req, res);
+
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
@@ -14,41 +27,33 @@ export default async function handler(req, res) {
     await ensureRedisConnection();
     console.log("Redis connection established.");
 
+    // Log request body for debugging; ensure sensitive information is handled securely
     console.log("Request body", req.body);
 
-    // Process incoming mail data
-    await saveMailData(req.body.data);
-    console.log("saved mail data", req.body);
-    console.log("Mail data saved.");
+    // Process incoming mail data and save it
+    const savedData = await saveMailData(req.body.data);
+    console.log("Mail data saved.", savedData);
 
-    // Access the modified request data
-    const { document, id } = req.savedData;
-
-    // Directly in your application startup code or a separate test script
-
-    // Try to add a job to the queue
+    // Attempt to add a job to the queue with the saved data
     await puppetQueue.add({
-      documentUrl: document,
-      documentId: id.toString(),
+      documentUrl: savedData.document,
+      documentId: savedData.id.toString(),
     });
 
-    // Send a successful response
+    // Send a successful response back to client
     res.status(200).json({
       success: true,
-      message: "MailData saved and queued successfully",
+      message: "Mail data saved and queued successfully",
     });
   } catch (error) {
-    // Log and return error
     console.error("API handler encountered an error:", error);
 
-    // Handle specific errors differently if needed
+    // Handle specific errors differently based on the error message
     if (error.message.includes("Redis")) {
-      // Specific Redis error handling
       res
         .status(500)
         .json({ success: false, error: "Failed to connect to Redis." });
     } else if (error.message.includes("queue")) {
-      // Specific queue error handling
       res
         .status(500)
         .json({ success: false, error: "Failed to queue the document." });
