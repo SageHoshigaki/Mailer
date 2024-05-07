@@ -14,10 +14,11 @@ export default async function handler(req, res) {
     await ensureRedisConnection();
     console.log("Redis connection established.");
 
-    console.log(req);
+    console.log("Request body", req.body);
 
     // Process incoming mail data
-    await saveMailData(req);
+    await saveMailData(req.body);
+    console.log("saved mail data", req.body);
     console.log("Mail data saved.");
 
     // Access the modified request data
