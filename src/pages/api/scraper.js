@@ -7,7 +7,7 @@ import { ensureRedisConnection } from "@utils/redisManager";
 // Initialize the CORS middleware
 const cors = initMiddleware(
   Cors({
-    methods: ["POST"], // Only allow POST requests
+    methods: ["GET", "POST"], // Only allow POST requests
     origin: true, // Reflect the request origin or specify if needed
     credentials: true,
   })
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     const savedData = await saveMailData(req.body.data);
     console.log("Mail data saved.", savedData);
 
-    // Attempt to add a job to the queue with the saved data
+    console.log(savedData.document, savedData.id); // Attempt to add a job to the queue with the saved data
     await puppetQueue.add({
       documentUrl: savedData.document,
       documentId: savedData.id.toString(),
