@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     console.log("Request body", req.body);
 
     // Process incoming mail data
-    await saveMailData(req.body);
+    await saveMailData(req.body.data);
     console.log("saved mail data", req.body);
     console.log("Mail data saved.");
 

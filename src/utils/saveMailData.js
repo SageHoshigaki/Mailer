@@ -1,10 +1,9 @@
 import prisma from "@utils/prisma";
 
-// Script to process incoming mail data and save it to the database
-const saveMailData = async (req) => {
-  const { data } = req.body;
+// Function to process incoming mail data and save it to the database
+const saveMailData = async (data) => {
   if (!data) {
-    throw new Error("No data provided in the request body");
+    throw new Error("No data provided");
   }
 
   try {
@@ -14,14 +13,14 @@ const saveMailData = async (req) => {
       },
     });
 
-    // Optionally, attach the saved data ID to the request object for further processing
-    req.savedData = {
+    // Return the saved data ID and document for further processing
+    return {
       id: savedData.id.toString(),
       document: savedData.document_url,
     };
   } catch (error) {
     console.error("Error saving mail data:", error);
-    throw new Error(error.message);
+    throw error; // Re-throwing the original error to preserve the stack trace
   }
 };
 
