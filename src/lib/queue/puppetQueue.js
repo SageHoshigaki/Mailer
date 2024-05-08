@@ -5,13 +5,20 @@ import processDocument from "@utils/processDocument";
 import { lobMailQueue } from "@queue/lobMailQueue";
 
 // Create the Bull queue with the Redis configuration
-const puppetQueue = new Bull("puppetQueue", { redis: redisConfig });
+const puppetQueue = new Bull("puppetQueue", {
+  redis: redisConfig,
+  settings: {
+    maxStalledCount: 2,
+    stalledInterval: 10000,
+  },
+});
 
 // Consumer to process jobs
 puppetQueue.process(async (job) => {
   try {
     const { documentUrl, documentId } = job.data;
     console.log(`Starting job ${job.id}:`, documentUrl, documentId);
+    job.progress(45);
     await processDocument(documentUrl, documentId);
     console.log(`Job ${job.id} completed successfully.`);
   } catch (error) {
