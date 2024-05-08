@@ -1,45 +1,41 @@
-const puppeteer = require("puppeteer");
-const path = require("path");
-const fs = require("fs");
+import puppeteer from "puppeteer";
+import path from "path";
+import fs from "fs";
 import renameDownloadedFile from "@utils/common/dwnloadRename";
 import uploadToGoogleCloud from "@utils/cloud/googlecloud";
 import updatePdfLink from "@utils/db/update";
 import resizePDF from "@utils/resizePdf";
+import waitForDownload from "@utils/waitForDownload";
 
 const downloadPath = path.join(__dirname, "..", "src", "downloads");
 
-require("dotenv").config();
-
-import waitForDownload from "@utils/waitForDownload";
-
 async function puppetArms(url, entryId) {
-  // Default path if env var is missing
-
-  if (!fs.existsSync(downloadPath)) {
-    fs.mkdirSync(downloadPath, { recursive: true });
-  }
-
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-accelerated-2d-canvas",
-      "--disable-gpu",
-    ],
-  });
-
-  const page = await browser.newPage();
-
-  // Create a new CDP session and set download behavior
-  const client = await page.target().createCDPSession();
-  await client.send("Page.setDownloadBehavior", {
-    behavior: "allow",
-    downloadPath: downloadPath,
-  });
-
   try {
+    // Check if download directory exists, create if not
+    if (!fs.existsSync(downloadPath)) {
+      fs.mkdirSync(downloadPath, { recursive: true });
+    }
+
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-accelerated-2d-canvas",
+        "--disable-gpu",
+      ],
+    });
+
+    const page = await browser.newPage();
+
+    // Create a new CDP session and set download behavior
+    const client = await page.target().createCDPSession();
+    await client.send("Page.setDownloadBehavior", {
+      behavior: "allow",
+      downloadPath: downloadPath,
+    });
+
     await page.goto(url, { waitUntil: "networkidle0" });
 
     // Selector for the dropdown trigger
@@ -59,7 +55,6 @@ async function puppetArms(url, entryId) {
     await page.click(downbtnSelector, { visibility: "true" });
 
     // Clicking twice as per your setup
-
     await waitForDownload(downloadPath);
 
     // Find the downloaded file
