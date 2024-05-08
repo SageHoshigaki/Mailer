@@ -7,7 +7,7 @@ import updatePdfLink from "@utils/db/update";
 import resizePDF from "@utils/resizePdf";
 import waitForDownload from "@utils/waitForDownload";
 
-const downloadPath = path.join(__dirname, "..", "src", "downloads");
+const downloadPath = path.resolve(__dirname, "..", "downloads");
 
 async function puppetArms(url, entryId) {
   try {
@@ -15,7 +15,7 @@ async function puppetArms(url, entryId) {
     if (!fs.existsSync(downloadPath)) {
       fs.mkdirSync(downloadPath, { recursive: true });
     }
-
+    console.log("Initializing Puppeteer browser...");
     const browser = await puppeteer.launch({
       headless: true,
       args: [
@@ -26,6 +26,7 @@ async function puppetArms(url, entryId) {
         "--disable-gpu",
       ],
     });
+    console.log("Puppeteer browser initialized successfully.");
 
     const page = await browser.newPage();
 
