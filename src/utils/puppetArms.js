@@ -7,16 +7,14 @@ import updatePdfLink from "@utils/db/update";
 import resizePDF from "@utils/resizePdf";
 import waitForDownload from "@utils/waitForDownload";
 
-const downloadPath = path.resolve(__dirname, "..", "downloads");
+// Use the /tmp directory for downloads, permissible in Vercel's environment
+const downloadPath = path.resolve("/tmp", "downloads");
 
 async function puppetArms(url, entryId) {
-  let browser; // Define browser variable outside try block
-
+  let browser;
   try {
-    // Check if download directory exists, create if not
-    if (!fs.existsSync(downloadPath)) {
-      fs.mkdirSync(downloadPath, { recursive: true });
-    }
+    // Ensure the download directory exists or create it
+    ensureDownloadDirectoryExists(downloadPath);
     console.log("Initializing Puppeteer browser...");
     browser = await puppeteer.launch({
       headless: true,
@@ -32,67 +30,64 @@ async function puppetArms(url, entryId) {
 
     const page = await browser.newPage();
 
-    // Create a new CDP session and set download behavior
-    const client = await page.target().createCDPSession();
-    await client.send("Page.setDownloadBehavior", {
+    // Set download behavior to download directly into allowed tmp directory
+    await page._client.send("Page.setDownloadBehavior", {
       behavior: "allow",
       downloadPath: downloadPath,
     });
 
-    console.log("Opening the page...");
+    console.log("Navigating to URL...");
     await page.goto(url, { waitUntil: "networkidle0" });
-    console.log("Page opened.");
+    console.log("URL loaded.");
 
-    console.log("Clicking the dropdown...");
-    // Selector for the dropdown trigger
-    const dropdownTriggerSelector =
-      'span.n-button__content > svg[aria-hidden="true"]';
-    // Selector for the dropdown option to download PDF
-    const downbtnSelector = ".v-binder-follower-content";
-    console.log("Dropdown clicked.");
+    // Trigger download
+    console.log("Triggering download...");
+    await triggerDownload(page);
 
-    // Wait for the dropdown trigger to appear and click it
-    await page.waitForSelector(dropdownTriggerSelector, { visible: true });
-    await page.click(dropdownTriggerSelector);
-
-    // Wait for the element to be available
-    await page.waitForSelector(downbtnSelector, { visible: true });
-
-    // Click on the element
-    await page.click(downbtnSelector, { visibility: "true" });
-
-    console.log("Waiting for the download to finish...");
-    // Clicking twice as per your setup
+    console.log("Waiting for download to finish...");
     await waitForDownload(downloadPath);
     console.log("Download finished.");
 
-    // Find the downloaded file
-    const downloadedFile = fs
-      .readdirSync(downloadPath)
-      .find((file) => file.endsWith(".pdf"));
-    if (!downloadedFile) {
-      throw new Error("Download failed or file not found.");
-    }
-
-    const filePath = path.join(downloadPath, downloadedFile);
+    const filePath = await findDownloadedFile(downloadPath);
     const newFilePath = await renameDownloadedFile(filePath, entryId);
     const resizedFilePath = await resizePDF(newFilePath);
     const newFileUrl = await uploadToGoogleCloud(resizedFilePath);
-    const updatedDocument = await updatePdfLink(entryId, newFileUrl);
 
-    console.log("Document updated in the database:", updatedDocument);
+    await updatePdfLink(entryId, newFileUrl);
+    console.log("Document updated in the database:", newFileUrl);
     return newFileUrl;
   } catch (error) {
     console.error("Error in puppetArms function:", error);
-    // Handle the error or rethrow it if necessary
     throw error;
   } finally {
-    // Close the browser in the finally block to ensure it's always closed
     if (browser) {
       await browser.close();
       console.log("Puppeteer browser closed.");
     }
   }
+}
+
+function ensureDownloadDirectoryExists(downloadPath) {
+  if (!fs.existsSync(downloadPath)) {
+    fs.mkdirSync(downloadPath, { recursive: true });
+    console.log("Download directory created.");
+  }
+}
+
+async function triggerDownload(page) {
+  // Define selectors based on your actual page elements
+  const downloadButtonSelector = "#downloadButton"; // Change as per actual selector on the page
+  await page.waitForSelector(downloadButtonSelector, { visible: true });
+  await page.click(downloadButtonSelector);
+}
+
+async function findDownloadedFile(downloadPath) {
+  const downloadedFiles = fs.readdirSync(downloadPath);
+  const downloadedFile = downloadedFiles.find((file) => file.endsWith(".pdf"));
+  if (!downloadedFile) {
+    throw new Error("No downloaded PDF file found.");
+  }
+  return path.join(downloadPath, downloadedFile);
 }
 
 export default puppetArms;
