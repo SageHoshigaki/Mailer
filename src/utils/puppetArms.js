@@ -10,13 +10,15 @@ import waitForDownload from "@utils/waitForDownload";
 const downloadPath = path.resolve(__dirname, "..", "downloads");
 
 async function puppetArms(url, entryId) {
+  let browser; // Define browser variable outside try block
+
   try {
     // Check if download directory exists, create if not
     if (!fs.existsSync(downloadPath)) {
       fs.mkdirSync(downloadPath, { recursive: true });
     }
     console.log("Initializing Puppeteer browser...");
-    const browser = await puppeteer.launch({
+    browser = await puppeteer.launch({
       headless: true,
       args: [
         "--no-sandbox",
@@ -76,9 +78,14 @@ async function puppetArms(url, entryId) {
     return newFileUrl;
   } catch (error) {
     console.error("Error in puppetArms function:", error);
+    // Handle the error or rethrow it if necessary
     throw error;
   } finally {
-    await browser.close();
+    // Close the browser in the finally block to ensure it's always closed
+    if (browser) {
+      await browser.close();
+      console.log("Puppeteer browser closed.");
+    }
   }
 }
 
