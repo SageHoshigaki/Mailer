@@ -39,13 +39,17 @@ async function puppetArms(url, entryId) {
       downloadPath: downloadPath,
     });
 
+    console.log("Opening the page...");
     await page.goto(url, { waitUntil: "networkidle0" });
+    console.log("Page opened.");
 
+    console.log("Clicking the dropdown...");
     // Selector for the dropdown trigger
     const dropdownTriggerSelector =
       'span.n-button__content > svg[aria-hidden="true"]';
     // Selector for the dropdown option to download PDF
     const downbtnSelector = ".v-binder-follower-content";
+    console.log("Dropdown clicked.");
 
     // Wait for the dropdown trigger to appear and click it
     await page.waitForSelector(dropdownTriggerSelector, { visible: true });
@@ -57,8 +61,10 @@ async function puppetArms(url, entryId) {
     // Click on the element
     await page.click(downbtnSelector, { visibility: "true" });
 
+    console.log("Waiting for the download to finish...");
     // Clicking twice as per your setup
     await waitForDownload(downloadPath);
+    console.log("Download finished.");
 
     // Find the downloaded file
     const downloadedFile = fs
