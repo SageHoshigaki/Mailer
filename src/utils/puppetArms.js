@@ -6,48 +6,14 @@ import uploadToGoogleCloud from "@utils/cloud/googlecloud";
 import updatePdfLink from "@utils/db/update";
 import resizePDF from "@utils/resizePdf";
 import waitForDownload from "@utils/waitForDownload";
-
+//check
 // Use the /tmp directory for downloads, permissible in Vercel's environment
 const downloadPath = path.resolve("/tmp", "downloads");
 
-async function puppetArms(url, entryId) {
+async function puppetArms(pdf, entryId) {
   let browser;
   try {
-    // Ensure the download directory exists or create it
     ensureDownloadDirectoryExists(downloadPath);
-    console.log("Initializing Puppeteer browser...");
-    browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-accelerated-2d-canvas",
-        "--disable-gpu",
-      ],
-    });
-    console.log("Puppeteer browser initialized successfully.");
-
-    const page = await browser.newPage();
-
-    // Set download behavior to download directly into allowed tmp directory
-    await page._client.send("Page.setDownloadBehavior", {
-      behavior: "allow",
-      downloadPath: downloadPath,
-    });
-
-    console.log("Navigating to URL...");
-    await page.goto(url, { waitUntil: "networkidle0" });
-    console.log("URL loaded.");
-
-    // Trigger download
-    console.log("Triggering download...");
-    await triggerDownload(page);
-
-    console.log("Waiting for download to finish...");
-    await waitForDownload(downloadPath);
-    console.log("Download finished.");
-
     const filePath = await findDownloadedFile(downloadPath);
     const newFilePath = await renameDownloadedFile(filePath, entryId);
     const resizedFilePath = await resizePDF(newFilePath);
@@ -72,13 +38,6 @@ function ensureDownloadDirectoryExists(downloadPath) {
     fs.mkdirSync(downloadPath, { recursive: true });
     console.log("Download directory created.");
   }
-}
-
-async function triggerDownload(page) {
-  // Define selectors based on your actual page elements
-  const downloadButtonSelector = "#downloadButton"; // Change as per actual selector on the page
-  await page.waitForSelector(downloadButtonSelector, { visible: true });
-  await page.click(downloadButtonSelector);
 }
 
 async function findDownloadedFile(downloadPath) {

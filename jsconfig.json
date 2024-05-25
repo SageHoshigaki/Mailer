@@ -7,6 +7,7 @@
       "@lib/*":["src/lib/*"],
       "@queue/*":["src/lib/queue/*"],
       "@downloads/*":["src/lib/download/*"],
+      "@components/*":["src/components/*"],
     }
   }
 }
