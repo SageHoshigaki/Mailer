@@ -1,35 +1,44 @@
-import puppeteer from "puppeteer";
-import path from "path";
+import axios from "axios";
+import dotenv from "dotenv";
 import fs from "fs";
+import path from "path";
 import renameDownloadedFile from "@utils/common/dwnloadRename";
+import resizePDF from "@utils/resizePdf";
 import uploadToGoogleCloud from "@utils/cloud/googlecloud";
 import updatePdfLink from "@utils/db/update";
-import resizePDF from "@utils/resizePdf";
-import waitForDownload from "@utils/waitForDownload";
-//check
-// Use the /tmp directory for downloads, permissible in Vercel's environment
+
+dotenv.config();
+// Use the /tmp directory for downloads
 const downloadPath = path.resolve("/tmp", "downloads");
 
-async function puppetArms(pdf, entryId) {
-  let browser;
+async function puppetArms(url, entryId) {
   try {
     ensureDownloadDirectoryExists(downloadPath);
-    const filePath = await findDownloadedFile(downloadPath);
-    const newFilePath = await renameDownloadedFile(filePath, entryId);
+
+    // Call the endpoint on the droplet to initiate the Puppeteer download
+    const response = await axios.get(process.env.PUPPET_REMOTE, {
+      params: { url, entryId },
+      responseType: "arraybuffer",
+    });
+
+    // Save the downloaded PDF file to the /tmp directory
+    const pdfFilePath = path.join(downloadPath, `${entryId}.pdf`);
+    fs.writeFileSync(pdfFilePath, response.data);
+    console.log("Downloaded PDF file saved:", pdfFilePath);
+
+    // Rename, resize, and upload the PDF file
+    const newFilePath = await renameDownloadedFile(pdfFilePath, entryId);
     const resizedFilePath = await resizePDF(newFilePath);
     const newFileUrl = await uploadToGoogleCloud(resizedFilePath);
 
+    // Update the PDF link in the database
     await updatePdfLink(entryId, newFileUrl);
     console.log("Document updated in the database:", newFileUrl);
+
     return newFileUrl;
   } catch (error) {
     console.error("Error in puppetArms function:", error);
     throw error;
-  } finally {
-    if (browser) {
-      await browser.close();
-      console.log("Puppeteer browser closed.");
-    }
   }
 }
 
@@ -40,14 +49,4 @@ function ensureDownloadDirectoryExists(downloadPath) {
   }
 }
 
-async function findDownloadedFile(downloadPath) {
-  const downloadedFiles = fs.readdirSync(downloadPath);
-  const downloadedFile = downloadedFiles.find((file) => file.endsWith(".pdf"));
-  if (!downloadedFile) {
-    throw new Error("No downloaded PDF file found.");
-  }
-  return path.join(downloadPath, downloadedFile);
-}
-
 export default puppetArms;
-// circle
