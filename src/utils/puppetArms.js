@@ -16,15 +16,29 @@ async function puppetArms(url, entryId) {
     ensureDownloadDirectoryExists(downloadPath);
 
     // Call the endpoint on the droplet to initiate the Puppeteer download
-    const response = await axios.get(process.env.PUPPET_REMOTE, {
-      params: { url, entryId },
-      responseType: "arraybuffer",
-    });
+    const response = await axios.post(
+      process.env.PUPPET_REMOTE,
+      {
+        url,
+        entryId,
+      },
+      {
+        responseType: "arraybuffer",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     // Save the downloaded PDF file to the /tmp directory
     const pdfFilePath = path.join(downloadPath, `${entryId}.pdf`);
     fs.writeFileSync(pdfFilePath, response.data);
     console.log("Downloaded PDF file saved:", pdfFilePath);
+
+    // Verify the downloaded file is a valid PDF
+    if (!isValidPDF(pdfFilePath)) {
+      throw new Error("Downloaded file is not a valid PDF");
+    }
 
     // Rename, resize, and upload the PDF file
     const newFilePath = await renameDownloadedFile(pdfFilePath, entryId);
@@ -47,6 +61,12 @@ function ensureDownloadDirectoryExists(downloadPath) {
     fs.mkdirSync(downloadPath, { recursive: true });
     console.log("Download directory created.");
   }
+}
+
+function isValidPDF(filePath) {
+  const data = fs.readFileSync(filePath);
+  // Check for the PDF header
+  return data.slice(0, 4).toString() === "%PDF";
 }
 
 export default puppetArms;

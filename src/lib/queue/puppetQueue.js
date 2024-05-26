@@ -18,8 +18,8 @@ puppetQueue.process(async (job) => {
   try {
     const { documentUrl, documentId } = job.data;
     console.log(`Starting job ${job.id}:`, documentUrl, documentId);
-    job.progress(45);
     await processDocument(documentUrl, documentId);
+    job.progress(85);
     console.log(`Job ${job.id} completed successfully.`);
   } catch (error) {
     console.error(`Error processing job ${job.id}:`, error);
