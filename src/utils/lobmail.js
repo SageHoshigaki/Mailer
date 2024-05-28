@@ -4,44 +4,54 @@ import { getDocumentFromDb } from "@utils/db/findDoc";
 
 dotenv.config();
 
+function serializeBigInt(key, value) {
+  if (typeof value === "bigint") {
+    return value.toString();
+  }
+  return value;
+}
+
 async function sendLobMail(documentId) {
   try {
     // Retrieve the document from the database
     const document = await getDocumentFromDb(documentId);
 
     // Log the retrieved document for debugging
-    console.log("Retrieved document:", document);
+    console.log(
+      "Retrieved document:",
+      JSON.stringify(document, serializeBigInt, 2)
+    );
 
     // Ensure all properties are defined and trimmed
-    const toName = document.To_DebtCollectorName
-      ? document.To_DebtCollectorName.trim()
+    const toName = document.contact_toReceiverName
+      ? document.contact_toReceiverName.trim()
       : "No Name";
-    const toAddress = document.To_DebtCollectorAddress
-      ? document.To_DebtCollectorAddress.trim()
+    const toAddress = document.contact_ToReceiverAddress
+      ? document.contact_ToReceiverAddress.trim()
       : "No Address";
-    const toCity = document.To_DebtCollectorCity
-      ? document.To_DebtCollectorCity.trim()
+    const toCity = document.contact_ToReceiverCity
+      ? document.contact_ToReceiverCity.trim()
       : "No City";
-    const toState = document.To_DebtCollectorState
-      ? document.To_DebtCollectorState.trim()
+    const toState = document.contact_ToReceiverState
+      ? document.contact_ToReceiverState.trim()
       : "No State";
-    const toZip = document.To_DebtCollectorZipCode
-      ? document.To_DebtCollectorZipCode.trim()
+    const toZip = document.contact_ToReceiverZipCode
+      ? document.contact_ToReceiverZipCode.trim()
       : "No Zip";
-    const fromName = document.From_ContactFullName
-      ? document.From_ContactFullName.trim()
+    const fromName = document.contact_FromSenderName
+      ? document.contact_FromSenderName.trim()
       : "No Name";
-    const fromAddress = document.From_ContactAddress
-      ? document.From_ContactAddress.trim()
+    const fromAddress = document.contact_FromSenderAddress
+      ? document.contact_FromSenderAddress.trim()
       : "No Address";
-    const fromCity = document.From_ContactCity
-      ? document.From_ContactCity.trim()
+    const fromCity = document.Contact_FromSenderCity
+      ? document.Contact_FromSenderCity.trim()
       : "No City";
-    const fromState = document.From_ContactState
-      ? document.From_ContactState.trim()
+    const fromState = document.contact_FromSenderState
+      ? document.contact_FromSenderState.trim()
       : "No State";
-    const fromZip = document.From_ContactZipCode
-      ? document.From_ContactZipCode.trim()
+    const fromZip = document.contact_FromSenderZipCode
+      ? document.contact_FromSenderZipCode.trim()
       : "No Zip";
 
     // Construct the form data

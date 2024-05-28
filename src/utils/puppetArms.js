@@ -8,8 +8,8 @@ import uploadToGoogleCloud from "@utils/cloud/googlecloud";
 import updatePdfLink from "@utils/db/update";
 
 dotenv.config();
-// Use the /tmp directory for downloads
-const downloadPath = path.resolve("/tmp", "downloads");
+// Use the downloads folder within the src directory for downloads
+const downloadPath = path.resolve(__dirname, "..", "downloads");
 
 async function puppetArms(url, entryId) {
   try {
@@ -30,7 +30,7 @@ async function puppetArms(url, entryId) {
       }
     );
 
-    // Save the downloaded PDF file to the /tmp directory
+    // Save the downloaded PDF file to the downloads folder
     const pdfFilePath = path.join(downloadPath, `${entryId}.pdf`);
     fs.writeFileSync(pdfFilePath, response.data);
     console.log("Downloaded PDF file saved:", pdfFilePath);
