@@ -2,12 +2,12 @@
   "version": 2,
   "builds": [
     {
-      "src": "next.config.js",
+      "src": "package.json",
       "use": "@vercel/next"
     }
   ],
   "functions": {
-    "api/**/*.js": {
+    "api/**": {
       "maxDuration": 300
     }
   }
