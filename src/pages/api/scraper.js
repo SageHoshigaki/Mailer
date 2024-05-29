@@ -27,8 +27,13 @@ export default async function handler(req, res) {
     await ensureRedisConnection();
     console.log("Redis connection established.");
 
-    // Log request body for debugging; ensure sensitive information is handled securely
+    // Log request body for debugging
     console.log("Request body", req.body);
+
+    // Check if req.body.data exists and is an object
+    if (!req.body.data || typeof req.body.data !== "object") {
+      throw new Error("No data provided");
+    }
 
     // Process incoming mail data and save it
     const savedData = await saveMailData(req.body.data);
@@ -57,6 +62,10 @@ export default async function handler(req, res) {
       res
         .status(500)
         .json({ success: false, error: "Failed to queue the document." });
+    } else if (error.message.includes("No data provided")) {
+      res
+        .status(400)
+        .json({ success: false, error: "No data provided in the request." });
     } else {
       // General error handling
       res.status(500).json({ success: false, error: error.message });
