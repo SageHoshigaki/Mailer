@@ -7,10 +7,18 @@ import resizePDF from "@utils/resizePdf";
 import uploadToGoogleCloud from "@utils/cloud/googlecloud";
 import updatePdfLink from "@utils/db/update";
 
-//
 dotenv.config();
-// Use the downloads folder within the src directory for downloads
-const downloadPath = path.resolve(__dirname, "..", "downloads");
+
+// Use the downloads folder within the src directory for local downloads
+const localDownloadPath = path.resolve(__dirname, "..", "downloads");
+// Use the /tmp directory for Vercel (production)
+const productionDownloadPath = "/tmp/downloads";
+
+// Determine the correct download path based on the environment
+const downloadPath =
+  process.env.NODE_ENV === "production"
+    ? productionDownloadPath
+    : localDownloadPath;
 
 async function puppetArms(url, entryId) {
   try {
@@ -71,4 +79,3 @@ function isValidPDF(filePath) {
 }
 
 export default puppetArms;
-//whoa
