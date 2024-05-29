@@ -4,23 +4,20 @@ import { getDocumentFromDb } from "@utils/db/findDoc";
 
 dotenv.config();
 
-function serializeBigInt(key, value) {
-  if (typeof value === "bigint") {
-    return value.toString();
-  }
-  return value;
-}
-
 async function sendLobMail(documentId) {
   try {
-    // Retrieve the document from the database
-    const document = await getDocumentFromDb(documentId);
+    // Ensure documentId is parsed as an integer
+    const intDocumentId = parseInt(documentId, 10);
+
+    if (isNaN(intDocumentId)) {
+      throw new Error(`Invalid documentId: ${documentId}`);
+    }
+
+    // Retrieve the document from the database using the new Int ID
+    const document = await getDocumentFromDb(intDocumentId);
 
     // Log the retrieved document for debugging
-    console.log(
-      "Retrieved document:",
-      JSON.stringify(document, serializeBigInt, 2)
-    );
+    console.log("Retrieved document:", JSON.stringify(document, null, 2));
 
     // Ensure all properties are defined and trimmed
     const toName = document.contact_toReceiverName

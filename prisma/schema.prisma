@@ -23,7 +23,7 @@ datasource db {
 // pdfLink                 String?
 //}
 model UserMailService {
-  id                        BigInt   @id @default(autoincrement())
+  id                        Int      @id @default(sequence())
   document_url              String // Optional: Now nullable
   contact_toReceiverName    String
   contact_ToReceiverAddress String

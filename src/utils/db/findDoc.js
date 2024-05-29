@@ -1,9 +1,18 @@
 import prisma from "@utils/prisma";
 
 export async function getDocumentFromDb(documentId) {
-  console.log(`Fetching document with ID: ${documentId}`);
+  // Parse documentId as an integer
+  const intDocumentId = parseInt(documentId, 10);
+
+  if (isNaN(intDocumentId)) {
+    console.error(`Invalid documentId: ${documentId}`);
+    throw new Error(`Invalid documentId: ${documentId}`);
+  }
+
+  console.log(`Fetching document with ID: ${intDocumentId}`);
+
   const document = await prisma.userMailService.findUnique({
-    where: { id: documentId },
+    where: { id: intDocumentId },
   });
 
   if (!document) {
