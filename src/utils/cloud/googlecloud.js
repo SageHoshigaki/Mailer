@@ -1,5 +1,17 @@
 import { Storage } from "@google-cloud/storage";
-const storage = new Storage(); // Assumes you have set up authentication
+
+// Parse the credentials from the environment variable
+const credentials = JSON.parse(process.env.GOOGLE_CLOUD_CREDENTIALS);
+
+// Initialize the Google Cloud Storage client with the credentials
+const storage = new Storage({
+  projectId: credentials.project_id,
+  credentials: {
+    client_email: credentials.client_email,
+    private_key: credentials.private_key,
+  },
+});
+
 const bucketName = "gohigh-level-mail";
 
 async function uploadToGoogleCloud(filePath) {
