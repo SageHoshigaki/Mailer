@@ -1,8 +1,14 @@
-import { Storage } from "@google-cloud/storage";
-const storage = new Storage(); // Assumes you have set up authentication
-const bucketName = "gohigh-level-mail";
+const { Storage } = require("@google-cloud/storage");
+const { loadGoogleCredentials } = require("@utils/googleCredentials");
 
 async function uploadToGoogleCloud(filePath) {
+  // Load the credentials
+  await loadGoogleCredentials();
+
+  // Initialize the Google Cloud Storage client
+  const storage = new Storage();
+  const bucketName = "gohigh-level-mail";
+
   const fileName = filePath.split("/").pop();
   await storage.bucket(bucketName).upload(filePath, {
     destination: fileName,
