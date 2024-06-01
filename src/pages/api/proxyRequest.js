@@ -21,7 +21,7 @@ export default async function handler(req, res) {
   if (req.method === "GET" && req.query.test === "connect") {
     try {
       const response = await axiosInstance.get(
-        `${process.env.PUPPET_REMOTE}/connect-test`
+        `${process.env.PUPPET_REMOTE_TEST}/connect-test`
       );
       res
         .status(200)
