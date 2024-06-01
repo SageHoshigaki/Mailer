@@ -26,7 +26,7 @@ async function puppetArms(url, entryId) {
 
     // Call the API endpoint on Vercel to initiate the Puppeteer download
     const response = await axios.post(
-      "/api/proxyRequest",
+      `${process.env.VERCEL_URL}/api/proxyRequest`,
       {
         url,
         entryId,
