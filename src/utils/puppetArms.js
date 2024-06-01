@@ -1,4 +1,5 @@
 import axios from "axios";
+import axiosRetry from "axios-retry";
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
@@ -20,24 +21,36 @@ const downloadPath =
     ? productionDownloadPath
     : localDownloadPath;
 
+// Create an axios instance with a longer timeout
+const axiosInstance = axios.create({
+  timeout: 60000, // 60 seconds
+  responseType: "arraybuffer",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Apply axios-retry to the axios instance
+axiosRetry(axiosInstance, {
+  retries: 3, // Number of retries
+  retryDelay: (retryCount) => {
+    return retryCount * 2000; // Time interval between retries in milliseconds
+  },
+  retryCondition: (error) => {
+    // Retry on network errors or 5xx status codes
+    return error.response?.status >= 500 || error.code === "ECONNABORTED";
+  },
+});
+
 async function puppetArms(url, entryId) {
   try {
     ensureDownloadDirectoryExists(downloadPath);
 
     // Call the endpoint on the droplet to initiate the Puppeteer download
-    const response = await axios.post(
-      process.env.PUPPET_REMOTE,
-      {
-        url,
-        entryId,
-      },
-      {
-        responseType: "arraybuffer",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await axiosInstance.post(process.env.PUPPET_REMOTE, {
+      url,
+      entryId,
+    });
 
     // Save the downloaded PDF file to the downloads folder
     const pdfFilePath = path.join(downloadPath, `${entryId}.pdf`);
