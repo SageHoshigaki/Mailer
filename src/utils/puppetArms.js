@@ -26,7 +26,7 @@ async function puppetArms(url, entryId) {
 
     // Call the API endpoint on the DigitalOcean droplet to initiate the Puppeteer download
     const response = await axios.post(
-      `${process.env.PUPPET_REMOTE}/puppetremote`,
+      `${process.env.PUPPET_REMOTE}`,
       {
         url,
         entryId,
