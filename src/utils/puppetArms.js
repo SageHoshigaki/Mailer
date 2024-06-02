@@ -24,9 +24,9 @@ async function puppetArms(url, entryId) {
   try {
     ensureDownloadDirectoryExists(downloadPath);
 
-    // Call the API endpoint on Vercel to initiate the Puppeteer download
+    // Call the API endpoint on the DigitalOcean droplet to initiate the Puppeteer download
     const response = await axios.post(
-      `${process.env.VERCEL_URL}/api/proxyRequest`,
+      `${process.env.PUPPET_REMOTE}/puppetremote`,
       {
         url,
         entryId,
