@@ -1,5 +1,8 @@
 import axios from "axios";
 import axiosRetry from "axios-retry";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const axiosInstance = axios.create({
   timeout: 60000, // 60 seconds
