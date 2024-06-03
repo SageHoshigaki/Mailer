@@ -1,6 +1,8 @@
+import dotenv from "dotenv";
 const { Storage } = require("@google-cloud/storage");
 const { loadGoogleCredentials } = require("@utils/googleCredentials");
 
+dotenv.config();
 async function uploadToGoogleCloud(filePath) {
   // Load the credentials
   await loadGoogleCredentials();
