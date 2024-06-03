@@ -42,4 +42,5 @@ next-env.d.ts
 
 
 # Ignore Google CLOUD jSON CREDENTIALS
+
 src/utils/cloud/gohighleveldc-b44e03554d72.json
