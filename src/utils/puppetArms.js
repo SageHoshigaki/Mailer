@@ -36,7 +36,7 @@ async function puppetArms(url, entryId) {
         headers: {
           "Content-Type": "application/json",
         },
-        timeout: 120000, // 120 seconds
+        timeout: 300000, // 120 seconds
       }
     );
 
