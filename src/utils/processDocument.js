@@ -1,10 +1,27 @@
-import puppetArms from "@utils/puppetArms";
+import axios from "axios";
+import dotenv from "dotenv";
 
-// Gives Data Document For PuppetArms the Db Id And The Url To Download Document
+dotenv.config();
+
 const processDocument = async (documentUrl, documentId) => {
   try {
-    // Pass both the URL and the ID to your puppetArms function
-    await puppetArms(documentUrl, documentId);
+    const response = await axios.post(
+      `${process.env.VERCEL_URL}/api/puppetremote`,
+      {
+        url: documentUrl,
+        entryId: documentId,
+      },
+      {
+        responseType: "json",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        timeout: 600000, // 10 minutes
+      }
+    );
+
+    console.log("Received response:", response.data);
+    return response.data;
   } catch (error) {
     console.error("Error running processDocument middleware:", error);
     throw new Error(error.message);
