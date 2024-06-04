@@ -9,12 +9,9 @@ import updatePdfLink from "@utils/db/update";
 
 dotenv.config();
 
-// Use the downloads folder within the src directory for local downloads
 const localDownloadPath = path.resolve(__dirname, "..", "downloads");
-// Use the /tmp directory for Vercel (production)
 const productionDownloadPath = "/tmp/downloads";
 
-// Determine the correct download path based on the environment
 const downloadPath =
   process.env.NODE_ENV === "production"
     ? productionDownloadPath
@@ -24,9 +21,8 @@ async function puppetArms(url, entryId) {
   try {
     ensureDownloadDirectoryExists(downloadPath);
 
-    // Call the API endpoint on the DigitalOcean droplet to initiate the Puppeteer download
     const response = await axios.post(
-      `${process.env.PUPPET_REMOTE}`,
+      `${process.env.VERCEL_URL}/api/proxyRequest`, // Ensure this is the correct URL for your Vercel deployment
       {
         url,
         entryId,
@@ -36,26 +32,22 @@ async function puppetArms(url, entryId) {
         headers: {
           "Content-Type": "application/json",
         },
-        timeout: 300000, // 120 seconds
+        timeout: 300000, // 5 minutes
       }
     );
 
-    // Save the downloaded PDF file to the downloads folder
     const pdfFilePath = path.join(downloadPath, `${entryId}.pdf`);
     fs.writeFileSync(pdfFilePath, response.data);
     console.log("Downloaded PDF file saved:", pdfFilePath);
 
-    // Verify the downloaded file is a valid PDF
     if (!isValidPDF(pdfFilePath)) {
       throw new Error("Downloaded file is not a valid PDF");
     }
 
-    // Rename, resize, and upload the PDF file
     const newFilePath = await renameDownloadedFile(pdfFilePath, entryId);
     const resizedFilePath = await resizePDF(newFilePath);
     const newFileUrl = await uploadToGoogleCloud(resizedFilePath);
 
-    // Update the PDF link in the database
     await updatePdfLink(entryId, newFileUrl);
     console.log("Document updated in the database:", newFileUrl);
 
@@ -75,7 +67,6 @@ function ensureDownloadDirectoryExists(directoryPath) {
 
 function isValidPDF(filePath) {
   const data = fs.readFileSync(filePath);
-  // Check for the PDF header
   return data.slice(0, 4).toString() === "%PDF";
 }
 
