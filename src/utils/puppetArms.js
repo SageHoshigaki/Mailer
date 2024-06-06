@@ -22,7 +22,7 @@ async function puppetArms(url, entryId) {
     ensureDownloadDirectoryExists(downloadPath);
 
     const response = await axios.post(
-      `${process.env.VERCEL_URL}/api/proxyRequest`, // Ensure this is the correct URL for your Vercel deployment
+      `${process.env.VERCEL_URL}/api/proxyrequest`, // Ensure this is the correct URL for your Vercel deployment
       {
         url,
         entryId,

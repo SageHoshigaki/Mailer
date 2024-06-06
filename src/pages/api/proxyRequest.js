@@ -5,10 +5,11 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const axiosInstance = axios.create({
-  timeout: 60000, // 60 seconds
+  timeout: 90000, // Increase timeout to 90 seconds
   responseType: "arraybuffer",
   headers: {
     "Content-Type": "application/json",
+    Accept: "application/pdf",
   },
 });
 
@@ -33,6 +34,10 @@ export default async function handler(req, res) {
       console.log("Received response from puppet remote:", response.status);
 
       res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=${entryId}.pdf`
+      );
       res.status(200).send(response.data);
     } catch (error) {
       console.error("Error in proxyRequest:", error.message);
@@ -41,7 +46,7 @@ export default async function handler(req, res) {
         console.error("Response status:", error.response.status);
         console.error("Response headers:", error.response.headers);
       } else if (error.request) {
-        console.error("Request data:", error.request);
+        console.error("No response received:", error.request);
       } else {
         console.error("Error message:", error.message);
       }
