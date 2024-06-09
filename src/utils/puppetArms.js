@@ -18,8 +18,15 @@ const downloadPath =
     : localDownloadPath;
 
 async function puppetArms(url, entryId) {
+  console.log("Starting puppetArms function");
+  console.log(`Environment: ${process.env.NODE_ENV}`);
+  console.log(`Download path: ${downloadPath}`);
+  console.log(`URL: ${url}`);
+  console.log(`Entry ID: ${entryId}`);
+
   try {
     ensureDownloadDirectoryExists(downloadPath);
+    console.log("Ensured download directory exists");
 
     const response = await axios.post(
       `${process.env.PUPPET_REMOTE}`, // Ensure this is the correct URL for your Vercel deployment
@@ -35,6 +42,7 @@ async function puppetArms(url, entryId) {
         timeout: 300000, // 5 minutes
       }
     );
+    console.log("Received response from PUPPET_REMOTE");
 
     const pdfFilePath = path.join(downloadPath, `${entryId}.pdf`);
     fs.writeFileSync(pdfFilePath, response.data);
@@ -43,10 +51,16 @@ async function puppetArms(url, entryId) {
     if (!isValidPDF(pdfFilePath)) {
       throw new Error("Downloaded file is not a valid PDF");
     }
+    console.log("Validated downloaded PDF file");
 
     const newFilePath = await renameDownloadedFile(pdfFilePath, entryId);
+    console.log("Renamed downloaded file:", newFilePath);
+
     const resizedFilePath = await resizePDF(newFilePath);
+    console.log("Resized PDF file:", resizedFilePath);
+
     const newFileUrl = await uploadToGoogleCloud(resizedFilePath);
+    console.log("Uploaded file to Google Cloud:", newFileUrl);
 
     await updatePdfLink(entryId, newFileUrl);
     console.log("Document updated in the database:", newFileUrl);
@@ -62,6 +76,8 @@ function ensureDownloadDirectoryExists(directoryPath) {
   if (!fs.existsSync(directoryPath)) {
     fs.mkdirSync(directoryPath, { recursive: true });
     console.log("Download directory created.");
+  } else {
+    console.log("Download directory already exists.");
   }
 }
 
