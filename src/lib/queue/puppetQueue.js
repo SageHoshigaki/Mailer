@@ -22,7 +22,9 @@ puppetQueue.process(async (job) => {
     job.progress(85);
     console.log(`Job ${job.id} completed successfully.`);
   } catch (error) {
-    console.error(`Error processing job ${job.id}:`, error);
+    console.error(`Error processing job ${job.id}:`, error.message);
+    console.error(`Job Data:`, job.data);
+    console.error(`Error Stack:`, error.stack);
     throw error; // Re-throw the error to mark the job as failed
   }
 });
@@ -38,7 +40,7 @@ puppetQueue.on("completed", async (job, result) => {
     await lobMailQueue.add(
       { documentId }, // Pass this as an object
       {
-        attempts: 5, // Optionally, set retry attempts
+        attempts: 2, // Optionally, set retry attempts
         backoff: {
           type: "exponential", // Backoff strategy
           delay: 1000, // Starting delay
@@ -49,8 +51,9 @@ puppetQueue.on("completed", async (job, result) => {
       `Job successfully added to lobMailQueue with Document ID: ${documentId}`
     );
   } catch (error) {
-    console.error(`Failed to add job to lobMailQueue:`, error);
-    console.error(`Error details: ${error.stack}`);
+    console.error(`Failed to add job to lobMailQueue:`, error.message);
+    console.error(`Job Data:`, job.data);
+    console.error(`Error Stack:`, error.stack);
   }
 });
 
@@ -59,7 +62,9 @@ puppetQueue.on("stalled", (job) => {
 });
 
 puppetQueue.on("failed", (job, error) => {
-  console.error(`Job ${job.id} failed with error:`, error);
+  console.error(`Job ${job.id} failed with error:`, error.message);
+  console.error(`Job Data:`, job.data);
+  console.error(`Error Stack:`, error.stack);
 });
 
 puppetQueue.on("active", (job) => {
