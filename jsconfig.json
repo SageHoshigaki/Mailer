@@ -8,6 +8,15 @@
       "@queue/*":["src/lib/queue/*"],
       "@downloads/*":["src/lib/download/*"],
       "@components/*":["src/components/*"],
+      "@auth/*":["src/utils/auth/*"],
+      "@cloud/*":["src/utils/cloud/*"],
+      "@stripe/*":["src/utils/stripe/*"],
+      "@db/*":["src/utils/db/*"],
+      "@processDocUtils/*":["src/utils/processDocUtils/*"],
+      "@mailprocess/*":["src/utils/mailprocess/*"],
+      "@redis/*":["src/utils/redis/*"],
+      "@common/*":["src/utils/common/*"],
+
     }
   }
 }
