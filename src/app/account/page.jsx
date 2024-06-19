@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import useRequireAuth from '@/hooks/Userequireauth';
+import useRequireAuth from '@/Hooks/useRequireAuth';
 
 function Account(){
 

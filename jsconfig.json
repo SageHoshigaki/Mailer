@@ -17,7 +17,7 @@
       "@redis/*":["src/utils/redis/*"],
       "@common/*":["src/utils/common/*"],
       "@autho/*":["src/pages/auth/*"],
-      "@hooks/*":["src/hooks/*"],
+      "@hooks/*":["src/Hooks/*"],
       "@pages/*":["src/pages/*"],
 
     }
