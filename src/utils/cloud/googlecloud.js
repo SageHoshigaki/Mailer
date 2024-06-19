@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 const { Storage } = require("@google-cloud/storage");
-const { loadGoogleCredentials } = require("@utils/googleCredentials");
+const { loadGoogleCredentials } = require("@utils/cloud/googleCredentials");
 
 dotenv.config();
 

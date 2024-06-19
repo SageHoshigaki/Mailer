@@ -1,6 +1,9 @@
 import React from 'react';
 
 const SignIn = () => {
+
+
+    
     return (
         <section className="section is-relative is-clipped">
             <div className="is-hidden-touch has-background-primary" style={{ position: 'absolute', top: 0, left: 0, width: '70%', height: '100%' }} />

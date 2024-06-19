@@ -1,5 +1,5 @@
 import Bull from "bull";
-import { redisConfig } from "@utils/redis";
+import { redisConfig } from "@utils/redis/redis";
 import sendLobMail from "@utils/lobmail";
 
 const lobMailQueue = new Bull("lobMailQueue", { redis: redisConfig });

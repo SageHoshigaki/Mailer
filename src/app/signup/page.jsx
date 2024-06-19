@@ -1,13 +1,13 @@
 import React from 'react';
-import SignIn from '@/components/Auth/sign-in/signin';
+import SignUp from '@/components/Auth/sign-up/signup';
 
-function signInUp() {
+function signUp() {
   return (
     <div>
-      <SignIn/>
+      <SignUp/>
     </div>
   );
 }
 
 
-export default signInUp;
+export default signUp;

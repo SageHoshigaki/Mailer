@@ -1,8 +1,8 @@
 import Cors from "cors";
-import initMiddleware from "@utils/initMiddleware";
-import saveMailData from "@utils/saveMailData";
+import initMiddleware from "@utils/common/initMiddleware";
+import saveMailData from "@utils/db/saveMailData";
 import { puppetQueue } from "@queue/puppetQueue";
-import { ensureRedisConnection } from "@utils/redisManager";
+import { ensureRedisConnection } from "@utils/redis/redisManager";
 
 // Initialize the CORS middleware
 const cors = initMiddleware(

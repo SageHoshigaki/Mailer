@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 import renameDownloadedFile from "@utils/common/dwnloadRename";
-import resizePDF from "@utils/resizePdf";
+import resizePDF from "@utils/processDocUtils/resizePdf";
 import uploadToGoogleCloud from "@utils/cloud/googlecloud";
 import updatePdfLink from "@utils/db/update";
 

@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import puppetArms from "@utils/puppetArms"; // Ensure you have the correct path to the puppetArms function
+import puppetArms from "@utils/processDocUtils/puppetArms"; // Ensure you have the correct path to the puppetArms function
 
 dotenv.config();
 

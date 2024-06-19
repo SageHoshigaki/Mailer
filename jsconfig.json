@@ -16,6 +16,9 @@
       "@mailprocess/*":["src/utils/mailprocess/*"],
       "@redis/*":["src/utils/redis/*"],
       "@common/*":["src/utils/common/*"],
+      "@autho/*":["src/pages/auth/*"],
+      "@hooks/*":["src/hooks/*"],
+      "@pages/*":["src/pages/*"],
 
     }
   }

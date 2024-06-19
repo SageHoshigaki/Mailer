@@ -1,4 +1,4 @@
-import prisma from "@utils/prisma";
+import prisma from "@utils/db/prisma";
 
 export async function getDocumentFromDb(documentId) {
   // Parse documentId as an integer

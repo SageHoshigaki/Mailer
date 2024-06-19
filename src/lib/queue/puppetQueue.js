@@ -1,7 +1,7 @@
 // src/queue/puppetQueue.js
 import Bull from "bull";
-import { redisConfig, client } from "@utils/redis";
-import processDocument from "@utils/processDocument";
+import { redisConfig, client } from "@utils/redis/redis";
+import processDocument from "@utils/processDocUtils/processDocument";
 import { lobMailQueue } from "@queue/lobMailQueue";
 
 // Create the Bull queue with the Redis configuration

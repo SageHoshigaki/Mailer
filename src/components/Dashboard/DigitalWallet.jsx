@@ -1,14 +1,17 @@
-// src/components/DigitalWallet.js
-import React from 'react';
+"use client";
+import { useState } from 'react';
+import Link from 'next/link'; // Use Next.js Link component
 
 const DigitalWallet = () => {
+  const [currentFunds, setCurrentFunds] = useState("16,055.00");
+
   return (
-    <div className="box">
-      <p className="has-background-primary has-text-white p-2">Wallet</p>
-      <div className="content">
-        <p>Balance: $16,055.00</p>
-        <button className="button is-primary">Add new Card</button>
-      </div>
+    <div>
+      <h1>Digital Wallet</h1>
+      <p>Current Funds: ${currentFunds}</p>
+      <Link href="/cardform" legacyBehavior>
+        <a class="button is-link">add a card</a>
+      </Link>
     </div>
   );
 };

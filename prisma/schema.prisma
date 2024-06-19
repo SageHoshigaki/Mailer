@@ -7,24 +7,34 @@ datasource db {
   url      = env("DATABASE_CONNECTION")
 }
 
-//model UserMailService {
-// id                      BigInt  @id @default(autoincrement())
-//  document                String
-//  To_DebtCollectorName    String
-//  To_DebtCollectorAddress String
-//  To_DebtCollectorCity    String
-//  To_DebtCollectorState   String
-//  To_DebtCollectorZipCode String
-// From_ContactFullName    String
-// From_ContactAddress     String
-// From_ContactCity        String
-// From_ContactState       String
-// From_ContactZipCode     String
-// pdfLink                 String?
-//}
+model User {
+  id                 Int               @id @default(sequence())
+  fullName           String
+  email              String            @unique
+  password           String
+  subscriptionStart  DateTime
+  subscriptionActive Boolean
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  userMailServices   UserMailService[]
+  Account            Account[]
+}
+
+model Account {
+  id                Int      @id @default(sequence())
+  provider          String
+  providerAccountId String
+  user              User     @relation(fields: [userId], references: [id])
+  userId            Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
 model UserMailService {
   id                        Int      @id @default(sequence())
-  document_url              String // Optional: Now nullable
+  userId                    Int
+  user                      User     @relation(fields: [userId], references: [id])
+  document_url              String?
   contact_toReceiverName    String
   contact_ToReceiverAddress String
   contact_ToReceiverCity    String
@@ -39,4 +49,6 @@ model UserMailService {
   Contact_TypeofMail        String
   contact_paperSize         String
   pdfLink                   String?
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
 }

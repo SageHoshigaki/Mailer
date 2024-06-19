@@ -1,4 +1,4 @@
-import prisma from "@utils/prisma";
+import prisma from "@utils/db/prisma";
 
 // Function to process incoming mail data and save it to the database
 const saveMailData = async (data) => {

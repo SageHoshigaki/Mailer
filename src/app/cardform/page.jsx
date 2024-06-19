@@ -1,8 +1,9 @@
 "use client";
-import React from 'react';
-import useRequireAuth from '@/Hooks/useRequireAuth';
+import React from "react";
+import CardForm from '@components/Card/CardForm';
+import useRequireAuth from '@hooks/useRequireAuth';
 
-function Account(){
+function AddCardPage () {
 
 const { session, status } = useRequireAuth();
 
@@ -15,15 +16,9 @@ const { session, status } = useRequireAuth();
   }
 
 
-
-    return(
-        <div class="section is-large is-fullheight">
-            <h1>Hola Mami </h1>
-
-
-        </div>
-       
-    )
-}
-
-export default Account;
+  <div>
+    <h1>Add Card</h1>
+    <CardForm />
+  </div>
+};
+export default AddCardPage;
