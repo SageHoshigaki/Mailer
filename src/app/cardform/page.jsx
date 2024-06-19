@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import CardForm from '@components/Card/CardForm';
-import useRequireAuth from '@hooks/useRequireAuth';
+import useRequireAuth from '@/hooks/Userequireauth';
 
 function AddCardPage () {
 

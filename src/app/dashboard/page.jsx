@@ -6,7 +6,7 @@ import AccountSummary from '@components/Dashboard/AccountSummary';
 import MoneyFlow from '@components/Dashboard/MoneyFlow';
 import DigitalWallet from '@components/Dashboard/DigitalWallet';
 import RecentActivity from '@components/Dashboard/RecentActivity';
-import useRequireAuth from '@hooks/useRequireAuth';
+import useRequireAuth from '@/hooks/Userequireauth';
 
 function Dashboard() {
   const { session, status } = useRequireAuth();
