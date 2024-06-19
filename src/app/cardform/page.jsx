@@ -2,7 +2,7 @@
 import React from "react";
 import CardForm from '@components/Card/CardForm';
 import useRequireAuth from '@/Hooks/useRequireAuth';
-
+//hootreload front
 function AddCardPage () {
 
 const { session, status } = useRequireAuth();
