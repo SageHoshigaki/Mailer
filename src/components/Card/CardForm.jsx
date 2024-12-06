@@ -1,10 +1,8 @@
-// components/CardForm.js
 "use client";
-import React from 'react';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import 'bulma/css/bulma.min.css'; // Import Bulma CSS
-import './style.css'; // Import your custom CSS
+
+import React, { useState } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
@@ -12,83 +10,97 @@ const CardForm = () => {
   const stripe = useStripe();
   const elements = useElements();
 
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    console.log("Form submitted. Email:", email);
+
+    setFormError(null);
+    setIsLoading(true);
+
     if (!stripe || !elements) {
+      setFormError("Stripe.js has not loaded yet. Please try again later.");
+      console.error("Stripe.js is not ready.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!email) {
+      setFormError("Email is required.");
+      console.error("Email is missing.");
+      setIsLoading(false);
       return;
     }
 
     const cardElement = elements.getElement(CardElement);
-    const { error, token } = await stripe.createToken(cardElement);
+
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: "card",
+      card: cardElement,
+    });
 
     if (error) {
-      console.error(error);
-    } else {
-      const response = await fetch('/api/addCard', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token: token.id }),
+      setFormError(error.message);
+      console.error("Error creating payment method:", error);
+      setIsLoading(false);
+      return;
+    }
+
+    console.log("Payment Method created:", paymentMethod);
+
+    try {
+      const response = await fetch("/api/wallet/addCard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          paymentMethodId: paymentMethod.id,
+        }),
       });
 
-      if (response.ok) {
-        console.log('Card added successfully!');
+      const data = await response.json();
+
+      if (!response.ok) {
+        setFormError(data.error || "Failed to add card. Please try again.");
+        console.error("API error:", data.error);
       } else {
-        console.error('Failed to add card');
+        setSuccessMessage("Card added successfully!");
+        console.log("Card added successfully:", data);
       }
+    } catch (apiError) {
+      setFormError("Network error. Please try again.");
+      console.error("Network error:", apiError);
     }
+
+    setIsLoading(false);
   };
 
   return (
-    <div className="section is-fullheight">
-      <div className="container">
-        <div className="columns is-centered">
-          <div className="column is-half">
-            <div className="box">
-              <h1 className="title">Add Your Card</h1>
-              <form onSubmit={handleSubmit}>
-                <div className="field">
-                  <label className="label">Card Information</label>
-                  <div className="control">
-                    <div className="stripe-input">
-                      <CardElement
-                        options={{
-                          style: {
-                            base: {
-                              fontSize: '16px',
-                              color: '#32325d',
-                              '::placeholder': {
-                                color: '#aab7c4',
-                              },
-                            },
-                            invalid: {
-                              color: '#fa755a',
-                            },
-                          },
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="field">
-                  <div className="control">
-                    <button
-                      type="submit"
-                      className="button is-primary"
-                      disabled={!stripe}
-                    >
-                      Add Card
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <label>Email:</label>
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+        placeholder="Enter your email"
+      />
+
+      <label>Card Details:</label>
+      <CardElement />
+
+      <button type="submit" disabled={isLoading}>
+        {isLoading ? "Processing..." : "Add Card"}
+      </button>
+
+      {formError && <p style={{ color: "red" }}>{formError}</p>}
+      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+    </form>
   );
 };
 
@@ -99,4 +111,3 @@ const WrappedCardForm = () => (
 );
 
 export default WrappedCardForm;
-

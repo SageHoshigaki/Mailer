@@ -19,6 +19,7 @@
       "@autho/*":["src/pages/auth/*"],
       "@hooks/*":["src/Hooks/*"],
       "@pages/*":["src/pages/*"],
+      "@digitalWallet/*":["src/utils/digitalWallet/*"],
 
     }
   }

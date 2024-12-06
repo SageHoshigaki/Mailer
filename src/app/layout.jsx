@@ -1,25 +1,28 @@
-import "./globals.css";
+"use client";
+
+//global css needs to be fixed
+import "../styles/globals.css";
+import "../styles/tailwind.css"; // Tailwind CSS
 import React from "react";
-import Head from "next/head";
-import ClientSessionProvider from "@components/ClientSessionProvider";
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@pages/api/auth/[...nextauth]';
+import { SessionProvider } from "next-auth/react"; // Session Management
+import { Elements } from "@stripe/react-stripe-js"; // Stripe Elements
+import { loadStripe } from "@stripe/stripe-js"; // Stripe Initialization
 
-export default async function RootLayout({ children }) {
-  const session = await getServerSession(authOptions);
+// Initialize Stripe with publishable key
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
+// Root Layout Component
+export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <Head>
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css"
-        />
-      </Head>
-      <body>
-        <ClientSessionProvider session={session}>
-          {children}
-        </ClientSessionProvider>
+    <html lang="en" className="h-full bg-gray-900 text-white">
+      <body className="h-full">
+        {/* Wrap with SessionProvider to manage user session */}
+        <SessionProvider>
+          {/* Wrap with Stripe Elements for payment flows */}
+          <Elements stripe={stripePromise}>
+            {children}
+          </Elements>
+        </SessionProvider>
       </body>
     </html>
   );
