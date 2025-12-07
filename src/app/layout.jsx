@@ -1,28 +1,44 @@
 "use client";
 
-//global css needs to be fixed
-import "../styles/globals.css";
-import "../styles/tailwind.css"; // Tailwind CSS
+
+
+import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from "@clerk/nextjs";
 import React from "react";
-import { SessionProvider } from "next-auth/react"; // Session Management
 import { Elements } from "@stripe/react-stripe-js"; // Stripe Elements
 import { loadStripe } from "@stripe/stripe-js"; // Stripe Initialization
-
+import { usePathname } from "next/navigation";
+import "./globals.css";
 // Initialize Stripe with publishable key
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
-// Root Layout Component
 export default function RootLayout({ children }) {
+  const pathname = usePathname();
+
+  // Define pages that should be public
+  const publicPages = ["/", "/about", "/pricing", "/contact"]; // Add your public pages here
+  const isPublicPage = publicPages.includes(pathname);
+
   return (
     <html lang="en" className="h-full bg-gray-900 text-white">
       <body className="h-full">
-        {/* Wrap with SessionProvider to manage user session */}
-        <SessionProvider>
-          {/* Wrap with Stripe Elements for payment flows */}
+        <ClerkProvider>
           <Elements stripe={stripePromise}>
-            {children}
+            {/* Allow access to public pages without signing in */}
+            {isPublicPage ? (
+              children
+            ) : (
+              <>
+                {/* Protected pages (Dashboard, etc.) only visible when signed in */}
+                <SignedIn>{children}</SignedIn>
+
+                {/* Redirect to Clerk Sign-In when signed out */}
+                <SignedOut>
+                  <RedirectToSignIn />
+                </SignedOut>
+              </>
+            )}
           </Elements>
-        </SessionProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

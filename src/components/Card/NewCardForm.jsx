@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import AddressForm from "./AddressForm";
 
 const NewCardForm = ({ onCardSaved, onCancel }) => {
-  const { data: session, status } = useSession();
   const stripe = useStripe();
   const elements = useElements();
 
@@ -14,7 +12,8 @@ const NewCardForm = ({ onCardSaved, onCancel }) => {
   const [error, setError] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
   const [formData, setFormData] = useState({
-    fullName: session?.user?.name || "",
+    fullName: "Sage Hoshigaki", // Default name for testing
+    email: "sagehoshigaki@gmail.com", // Default email for testing
     address: "",
     city: "",
     state: "",
@@ -23,16 +22,13 @@ const NewCardForm = ({ onCardSaved, onCancel }) => {
 
   // Fetch client secret
   useEffect(() => {
-    console.log(session);
-    if (!session || !session.user?.email || status === "loading") return;
-
     const fetchClientSecret = async () => {
       try {
         setLoading(true);
         const response = await fetch("/api/wallet/setupIntent", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: session.user.email }),
+          body: JSON.stringify({ email: formData.email }),
         });
 
         const data = await response.json();
@@ -46,7 +42,7 @@ const NewCardForm = ({ onCardSaved, onCancel }) => {
     };
 
     fetchClientSecret();
-  }, [session, status]);
+  }, [formData.email]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,7 +58,7 @@ const NewCardForm = ({ onCardSaved, onCancel }) => {
           card: cardElement,
           billing_details: {
             name: formData.fullName,
-            email: session.user.email,
+            email: formData.email,
             address: {
               line1: formData.address,
               city: formData.city,
@@ -83,9 +79,6 @@ const NewCardForm = ({ onCardSaved, onCancel }) => {
     }
   };
 
-  if (status === "loading") return <p>Loading session...</p>;
-  if (!session) return <p>No session available. Please log in.</p>;
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && <p className="text-red-500">{error}</p>}
@@ -96,13 +89,52 @@ const NewCardForm = ({ onCardSaved, onCancel }) => {
         onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
         placeholder="Full Name"
         required
+        className="p-2 border border-gray-300 rounded w-full"
       />
-      <CardElement />
-      <AddressForm formData={formData} onInputChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })} />
-      <button type="submit" disabled={loading} className="bg-blue-500 text-white p-2 rounded">
+      <input
+        type="email"
+        name="email"
+        value={formData.email}
+        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        placeholder="Email"
+        required
+        className="p-2 border border-gray-300 rounded w-full"
+      />
+      <CardElement
+        options={{
+          style: {
+            base: {
+              fontSize: "16px",
+              color: "#32325d",
+              "::placeholder": {
+                color: "#aab7c4",
+              },
+            },
+            invalid: {
+              color: "#fa755a",
+            },
+          },
+        }}
+        className="p-2 border border-gray-300 rounded"
+      />
+      <AddressForm
+        formData={formData}
+        onInputChange={(e) =>
+          setFormData({ ...formData, [e.target.name]: e.target.value })
+        }
+      />
+      <button
+        type="submit"
+        disabled={loading}
+        className={`p-2 rounded text-white ${loading ? "bg-gray-500" : "bg-blue-500"}`}
+      >
         {loading ? "Saving..." : "Save Card"}
       </button>
-      <button onClick={onCancel} type="button" className="bg-gray-500 text-white p-2 rounded">
+      <button
+        onClick={onCancel}
+        type="button"
+        className="bg-gray-500 text-white p-2 rounded"
+      >
         Cancel
       </button>
     </form>

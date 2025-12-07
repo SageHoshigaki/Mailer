@@ -1,36 +1,27 @@
-'use client';
+// app/(site)/LandingPage.jsx
+import Hero from "@/components/Hero";
+import InfoDiagram from "../InfoDiagram";
+import Metrics from "@components/Metrics";
+import Nav from "../Nav";
+import FooterCTA from "../Footer";
+import ValueCTA from "../ValueCta";
 
-import React, { useEffect } from 'react';
-import './landing.css';
-import { useSession } from 'next-auth/react';
-
-function Landing() {
-  const { data: session, status } = useSession();
-
-  console.log('Session', session);
-  console.log('Session status', status);
-  console.log("Session status", status);
-
-  useEffect(() => {
-    if (status !== 'loading') {
-      console.log('Session Data:', session);
-    }
-  }, [session, status]);
-
+export default function LandingPage() {
   return (
-    <div className="body">
-      <div className="container">
-        <p className="glitch">
-          <span aria-hidden="true">Penn Mail</span>
-          Penn Mail
-          <span aria-hidden="true">Penn Mail</span>
-        </p>
-      </div>
-      <div>
-        <h4>Penn Mail is designed to automate and simplify the process of sending physical mail. This application caters to both businesses and individuals, providing a streamlined way to manage and execute mailing tasks with ease.</h4>
-      </div>
-    </div>
+    <main className="bg-black min-h-screen text-white">
+      <Nav/>
+      {/* Hero */}
+      <Hero />
+
+      {/* ⬇️ Drop new sections here as we build them */}
+      <InfoDiagram/>
+      <ValueCTA/>
+      {/* <WhySection /> */}
+      <Metrics/>
+      {/* <FeaturesSection /> */}
+      {/* <SocialProof /> */}
+      <FooterCTA /> 
+
+    </main>
   );
 }
-
-export default Landing;

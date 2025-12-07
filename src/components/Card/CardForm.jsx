@@ -1,10 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 const CardForm = () => {
   const stripe = useStripe();
@@ -15,30 +12,30 @@ const CardForm = () => {
   const [formError, setFormError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
+  // Default email for testing
+  const defaultEmail = "sagehoshigaki@gmail.com";
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    console.log("Form submitted. Email:", email);
+    console.log("Form submitted. Email:", email || defaultEmail);
 
     setFormError(null);
     setIsLoading(true);
 
+    // Ensure Stripe and Elements are loaded
     if (!stripe || !elements) {
       setFormError("Stripe.js has not loaded yet. Please try again later.");
-      console.error("Stripe.js is not ready.");
       setIsLoading(false);
       return;
     }
 
-    if (!email) {
-      setFormError("Email is required.");
-      console.error("Email is missing.");
-      setIsLoading(false);
-      return;
-    }
+    // Use default email if none is provided
+    const userEmail = email || defaultEmail;
 
     const cardElement = elements.getElement(CardElement);
 
+    // Create payment method
     const { error, paymentMethod } = await stripe.createPaymentMethod({
       type: "card",
       card: cardElement,
@@ -53,12 +50,13 @@ const CardForm = () => {
 
     console.log("Payment Method created:", paymentMethod);
 
+    // Call your API to add the card
     try {
       const response = await fetch("/api/wallet/addCard", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email,
+          email: userEmail,
           paymentMethodId: paymentMethod.id,
         }),
       });
@@ -87,14 +85,36 @@ const CardForm = () => {
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        required
-        placeholder="Enter your email"
+        placeholder={`Enter your email (${defaultEmail} used if empty)`}
+        className="p-2 border border-gray-300 rounded mb-4"
       />
 
       <label>Card Details:</label>
-      <CardElement />
+      <CardElement
+        options={{
+          style: {
+            base: {
+              fontSize: "16px",
+              color: "#32325d",
+              "::placeholder": {
+                color: "#aab7c4",
+              },
+            },
+            invalid: {
+              color: "#fa755a",
+            },
+          },
+        }}
+        className="p-2 border border-gray-300 rounded mb-4"
+      />
 
-      <button type="submit" disabled={isLoading}>
+      <button
+        type="submit"
+        disabled={isLoading}
+        className={`p-2 rounded text-white ${
+          isLoading ? "bg-gray-500" : "bg-blue-500"
+        }`}
+      >
         {isLoading ? "Processing..." : "Add Card"}
       </button>
 
@@ -104,10 +124,4 @@ const CardForm = () => {
   );
 };
 
-const WrappedCardForm = () => (
-  <Elements stripe={stripePromise}>
-    <CardForm />
-  </Elements>
-);
-
-export default WrappedCardForm;
+export default CardForm;
