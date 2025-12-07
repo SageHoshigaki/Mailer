@@ -1,4 +1,4 @@
-"use client";
+/*"use client";
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation'; // Change this import
 import { useEffect } from 'react';
@@ -18,4 +18,4 @@ const useRequireAuth = () => {
   return { session, status };
 };
 
-export default useRequireAuth;
+export default useRequireAuth;*/
