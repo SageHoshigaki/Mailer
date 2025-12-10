@@ -3,8 +3,8 @@ export default function Nav() {
     <nav className="absolute inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-4">
       {/* Logo */}
       <div className="flex items-center gap-2 text-lg font-semibold text-white">
-        <img src="/logo.svg" alt="PennEquity" className="h-6" />
-        <span className="hidden md:inline-block">PennEquity</span>
+        <img src="img/mailer.png" alt="PennEquity" className="h-6" />
+        <span className="hidden md:inline-block"></span>
       </div>
 
       {/* CTA */}
